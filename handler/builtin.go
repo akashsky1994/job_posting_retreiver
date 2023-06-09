@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"akashsky1994/job_retreiver/model"
-	"akashsky1994/job_retreiver/repository"
 	"encoding/json"
+	"job_posting_retreiver/model"
+	"job_posting_retreiver/repository"
 	"math"
 	"os"
 	"time"
 
-	jrconstant "akashsky1994/job_retreiver/constant"
+	jrconstant "job_posting_retreiver/constant"
 
 	"github.com/gocarina/gocsv"
 )

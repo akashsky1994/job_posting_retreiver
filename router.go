@@ -1,7 +1,7 @@
 package main
 
 import (
-	"akashsky1994/job_retreiver/handler"
+	"job_posting_retreiver/handler"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"

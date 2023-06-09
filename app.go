@@ -1,10 +1,10 @@
 package main
 
 import (
-	"akashsky1994/job_retreiver/handler"
 	"encoding/json"
 	"fmt"
 	"io"
+	"job_posting_retreiver/handler"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -29,7 +29,7 @@ func New() (*AppConfig, error) {
 }
 
 func (app *AppConfig) AttachLogger() error {
-	logFile, err := os.OpenFile("job_retreiver.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	logFile, err := os.OpenFile("job_posting_retreiver.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 		defer logFile.Close()
@@ -39,13 +39,14 @@ func (app *AppConfig) AttachLogger() error {
 	app.Logger.SetOutput(mw)
 	app.Logger.SetFormatter(&log.TextFormatter{ForceColors: true, FullTimestamp: true, TimestampFormat: "2006-01-02 15:04:05"})
 	app.Logger.SetLevel(log.InfoLevel)
-	app.Logger.Print("Logging to a job_retreiver.log in Go!")
+	app.Logger.Print("Logging to a job_posting_retreiver.log in Go!")
 	return nil
 }
 
 func (app *AppConfig) AttachRouter() {
 	app.Router = chi.NewRouter()
 	app.Router.Use(
+		middleware.Heartbeat("/ping"),
 		middleware.Throttle(1),
 		middleware.RequestID,
 		middleware.Logger,

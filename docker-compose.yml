@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  job-retreiver-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    restart: on-failure
+    volumes:
+      - .:/go-job-retreiver-docker
+    container_name: go-job-retreiver-docker-app
+    environment:
+      - 'Env=Production'

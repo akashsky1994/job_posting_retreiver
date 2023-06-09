@@ -1,4 +1,4 @@
-module akashsky1994/job_retreiver
+module job_posting_retreiver
 
 go 1.18
 

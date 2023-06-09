@@ -1,11 +1,11 @@
 package repository
 
 import (
-	jrconstant "akashsky1994/job_retreiver/constant"
-	"akashsky1994/job_retreiver/model"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	jrconstant "job_posting_retreiver/constant"
+	"job_posting_retreiver/model"
 	"net/http"
 	"strconv"
 
