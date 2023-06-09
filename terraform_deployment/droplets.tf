@@ -26,9 +26,6 @@ resource "digitalocean_droplet" "jobretreiver" {
   provisioner "remote-exec" {
     inline = [
       "export PATH=$PATH:/usr/bin",
-      # install nginx
-      "sudo apt-get update",
-      "sudo apt install -y nginx",
       "chmod +x /tmp/setup_project.sh",
       "/tmp/setup_project.sh",
     ]
