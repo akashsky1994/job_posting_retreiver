@@ -3,3 +3,4 @@ data/*
 terraform_deployment/terraform.tfstate.backup
 terraform_deployment/terraform.tfstate
 terraform_deployment/.terraform*
+*.log
