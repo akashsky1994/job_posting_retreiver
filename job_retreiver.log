@@ -1,0 +1,144 @@
+[36mINFO[0m[2023-06-08 08:20:25] Logging to a vanir-app.log in Go!            
+[36mINFO[0m[2023-06-08 08:20:25] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 08:27:40] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 08:27:40] Cron Info: [{ID:1 Schedule:0xc00002c280 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x1266980 Job:0x1266980}] 
+[36mINFO[0m[2023-06-08 08:27:40] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 08:33:00] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 08:33:00] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 08:36:34] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 08:36:34] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 08:59:08] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 08:59:08] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 09:03:30] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 09:03:30] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 09:04:29] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 09:04:29] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 10:27:53] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 10:27:53] Cron Info: [{ID:1 Schedule:0xc00002d400 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x1284b80 Job:0x1284b80}] 
+[36mINFO[0m[2023-06-08 10:27:53] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 10:30:23] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 10:30:23] Cron Info: [{ID:1 Schedule:0xc00002d400 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x1284b80 Job:0x1284b80}] 
+[36mINFO[0m[2023-06-08 10:30:23] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 11:20:07] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 11:20:07] Cron Info: [{ID:1 Schedule:0xc00015fa40 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c8520 Job:0x12c8520}] 
+[36mINFO[0m[2023-06-08 11:20:07] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 11:34:04] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 11:34:04] Cron Info: [{ID:1 Schedule:0xc00002dac0 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c84c0 Job:0x12c84c0}] 
+[36mINFO[0m[2023-06-08 11:34:04] Starting Job Retreiver App                   
+[31mFATA[0m[2023-06-08 11:34:04] listen tcp :8080: bind: address already in use 
+[36mINFO[0m[2023-06-08 11:34:22] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 11:34:22] Cron Info: [{ID:1 Schedule:0xc00002dac0 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c84c0 Job:0x12c84c0}] 
+[36mINFO[0m[2023-06-08 11:34:22] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 11:44:23] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 11:44:23] Cron Info: [{ID:1 Schedule:0xc00015fa40 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c84c0 Job:0x12c84c0}] 
+[36mINFO[0m[2023-06-08 11:44:23] Starting Job Retreiver App                   
+[31mFATA[0m[2023-06-08 11:44:23] listen tcp :8080: bind: address already in use 
+[36mINFO[0m[2023-06-08 11:44:40] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 11:44:40] Cron Info: [{ID:1 Schedule:0xc00002dac0 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c84c0 Job:0x12c84c0}] 
+[36mINFO[0m[2023-06-08 11:44:40] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 12:17:35] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 12:17:35] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c9480 Job:0x12c9480}] 
+[36mINFO[0m[2023-06-08 12:17:35] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 12:19:36] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 12:19:36] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c9480 Job:0x12c9480}] 
+[36mINFO[0m[2023-06-08 12:19:36] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 17:51:23] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 17:51:23] Cron Info: [{ID:1 Schedule:0xc0001d5a80 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c9480 Job:0x12c9480}] 
+[36mINFO[0m[2023-06-08 17:51:23] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 17:51:59] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 17:51:59] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12c9480 Job:0x12c9480}] 
+[36mINFO[0m[2023-06-08 17:51:59] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:36:22] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:36:22] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d3e60 Job:0x12d3e60}] 
+[36mINFO[0m[2023-06-08 21:36:22] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:39:40] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:39:40] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4460 Job:0x12d4460}] 
+[36mINFO[0m[2023-06-08 21:39:40] GET /                                        
+[36mINFO[0m[2023-06-08 21:39:40] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:39:40] GET /files                                   
+[36mINFO[0m[2023-06-08 21:39:40] GET /files/*                                 
+[36mINFO[0m[2023-06-08 21:39:40] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:40:07] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:40:07] Cron Info: [{ID:1 Schedule:0xc00002dac0 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4460 Job:0x12d4460}] 
+[36mINFO[0m[2023-06-08 21:40:07] GET /                                        
+[36mINFO[0m[2023-06-08 21:40:07] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:40:07] GET /files                                   
+[36mINFO[0m[2023-06-08 21:40:07] GET /files/*                                 
+[36mINFO[0m[2023-06-08 21:40:07] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:43:51] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:43:51] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d3dc0 Job:0x12d3dc0}] 
+[36mINFO[0m[2023-06-08 21:43:51] GET /                                        
+[36mINFO[0m[2023-06-08 21:43:51] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:43:51] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:46:08] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:46:08] Cron Info: [{ID:1 Schedule:0xc00015fa80 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4280 Job:0x12d4280}] 
+[36mINFO[0m[2023-06-08 21:46:08] GET /                                        
+[36mINFO[0m[2023-06-08 21:46:08] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:46:08] TRACE /static/*                              
+[36mINFO[0m[2023-06-08 21:46:08] PUT /static/*                                
+[36mINFO[0m[2023-06-08 21:46:08] PATCH /static/*                              
+[36mINFO[0m[2023-06-08 21:46:08] HEAD /static/*                               
+[36mINFO[0m[2023-06-08 21:46:08] POST /static/*                               
+[36mINFO[0m[2023-06-08 21:46:08] OPTIONS /static/*                            
+[36mINFO[0m[2023-06-08 21:46:08] GET /static/*                                
+[36mINFO[0m[2023-06-08 21:46:08] CONNECT /static/*                            
+[36mINFO[0m[2023-06-08 21:46:08] DELETE /static/*                             
+[36mINFO[0m[2023-06-08 21:46:08] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:50:31] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:50:31] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4280 Job:0x12d4280}] 
+[36mINFO[0m[2023-06-08 21:50:31] GET /                                        
+[36mINFO[0m[2023-06-08 21:50:31] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:50:31] POST /static/*                               
+[36mINFO[0m[2023-06-08 21:50:31] GET /static/*                                
+[36mINFO[0m[2023-06-08 21:50:31] OPTIONS /static/*                            
+[36mINFO[0m[2023-06-08 21:50:31] DELETE /static/*                             
+[36mINFO[0m[2023-06-08 21:50:31] HEAD /static/*                               
+[36mINFO[0m[2023-06-08 21:50:31] TRACE /static/*                              
+[36mINFO[0m[2023-06-08 21:50:31] CONNECT /static/*                            
+[36mINFO[0m[2023-06-08 21:50:31] PATCH /static/*                              
+[36mINFO[0m[2023-06-08 21:50:31] PUT /static/*                                
+[36mINFO[0m[2023-06-08 21:50:31] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:51:14] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:51:14] Cron Info: [{ID:1 Schedule:0xc000167a80 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4280 Job:0x12d4280}] 
+[36mINFO[0m[2023-06-08 21:51:14] GET /                                        
+[36mINFO[0m[2023-06-08 21:51:14] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:51:14] HEAD /data/*                                 
+[36mINFO[0m[2023-06-08 21:51:14] PUT /data/*                                  
+[36mINFO[0m[2023-06-08 21:51:14] GET /data/*                                  
+[36mINFO[0m[2023-06-08 21:51:14] TRACE /data/*                                
+[36mINFO[0m[2023-06-08 21:51:14] POST /data/*                                 
+[36mINFO[0m[2023-06-08 21:51:14] PATCH /data/*                                
+[36mINFO[0m[2023-06-08 21:51:14] OPTIONS /data/*                              
+[36mINFO[0m[2023-06-08 21:51:14] CONNECT /data/*                              
+[36mINFO[0m[2023-06-08 21:51:14] DELETE /data/*                               
+[36mINFO[0m[2023-06-08 21:51:14] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:54:14] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:54:14] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4280 Job:0x12d4280}] 
+[36mINFO[0m[2023-06-08 21:54:14] GET /                                        
+[36mINFO[0m[2023-06-08 21:54:14] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:54:14] HEAD /files                                  
+[36mINFO[0m[2023-06-08 21:54:14] PATCH /files                                 
+[36mINFO[0m[2023-06-08 21:54:14] TRACE /files                                 
+[36mINFO[0m[2023-06-08 21:54:14] POST /files                                  
+[36mINFO[0m[2023-06-08 21:54:14] CONNECT /files                               
+[36mINFO[0m[2023-06-08 21:54:14] DELETE /files                                
+[36mINFO[0m[2023-06-08 21:54:14] OPTIONS /files                               
+[36mINFO[0m[2023-06-08 21:54:14] PUT /files                                   
+[36mINFO[0m[2023-06-08 21:54:14] GET /files                                   
+[36mINFO[0m[2023-06-08 21:54:14] HEAD /files/*                                
+[36mINFO[0m[2023-06-08 21:54:14] DELETE /files/*                              
+[36mINFO[0m[2023-06-08 21:54:14] PUT /files/*                                 
+[36mINFO[0m[2023-06-08 21:54:14] CONNECT /files/*                             
+[36mINFO[0m[2023-06-08 21:54:14] GET /files/*                                 
+[36mINFO[0m[2023-06-08 21:54:14] POST /files/*                                
+[36mINFO[0m[2023-06-08 21:54:14] OPTIONS /files/*                             
+[36mINFO[0m[2023-06-08 21:54:14] PATCH /files/*                               
+[36mINFO[0m[2023-06-08 21:54:14] TRACE /files/*                               
+[36mINFO[0m[2023-06-08 21:54:14] Starting Job Retreiver App                   
+[36mINFO[0m[2023-06-08 21:59:00] Logging to a job_retreiver.log in Go!        
+[36mINFO[0m[2023-06-08 21:59:00] Cron Info: [{ID:1 Schedule:0xc00002db00 Next:2023-06-09 00:00:00 -0400 EDT Prev:0001-01-01 00:00:00 +0000 UTC WrappedJob:0x12d4460 Job:0x12d4460}] 
+[36mINFO[0m[2023-06-08 21:59:00] GET /                                        
+[36mINFO[0m[2023-06-08 21:59:00] GET /builtin/v1/jobs/{category_id}           
+[36mINFO[0m[2023-06-08 21:59:00] GET /files                                   
+[36mINFO[0m[2023-06-08 21:59:00] GET /files/*                                 
+[36mINFO[0m[2023-06-08 21:59:00] Starting Job Retreiver App                   
