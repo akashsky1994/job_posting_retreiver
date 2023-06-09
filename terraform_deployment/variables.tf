@@ -9,3 +9,5 @@ variable "pvt_key" {
     type = string
     sensitive = true
 } # droplet private key location
+
+variable "public_ip" {}

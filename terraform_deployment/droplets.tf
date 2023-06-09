@@ -3,6 +3,10 @@ data "digitalocean_ssh_key" "ssh_key" {
   name = "jr_ssh_key"
 }
 
+data "digitalocean_reserved_ip" "myip" {
+  ip_address = var.public_ip
+}
+
 resource "digitalocean_droplet" "jobretreiver" {
   image = "ubuntu-22-10-x64"
   name = "jobretreiver"
@@ -35,10 +39,12 @@ resource "digitalocean_droplet" "jobretreiver" {
   }
 }
 
-resource "digitalocean_reserved_ip" "jobretreiverip" {
+# resource "digitalocean_reserved_ip" "jobretreiverip" {
+#   droplet_id = digitalocean_droplet.jobretreiver.id
+#   region = digitalocean_droplet.jobretreiver.region
+# }
+
+resource "digitalocean_reserved_ip_assignment" "jobretreiverip" {
+  ip_address = digitalocean_reserved_ip.myip.ip_address
   droplet_id = digitalocean_droplet.jobretreiver.id
-  region = digitalocean_droplet.jobretreiver.region
 }
-
-
-  
