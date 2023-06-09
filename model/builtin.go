@@ -2,6 +2,7 @@ package model
 
 type BuiltIn struct {
 	JobCount  int `json:"job_all_count"`
+	PageCount int `json:"pagination_count"`
 	Companies []struct {
 		Company BuiltInCompany `json:"company"`
 		Jobs    []BuiltInJob   `json:"jobs"`

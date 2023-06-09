@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"job_posting_retreiver/model"
 	"job_posting_retreiver/repository"
-	"math"
 	"os"
 	"time"
-
-	jrconstant "job_posting_retreiver/constant"
 
 	"github.com/gocarina/gocsv"
 )
@@ -21,7 +18,7 @@ func FetchBuiltInJobs(category_id string) error {
 		return err
 	}
 
-	total_pages := int(math.Ceil(float64(jbService.JBBuiltIn.JobCount) / float64(jrconstant.PerPage)))
+	total_pages := jbService.JBBuiltIn.PageCount //int(math.Ceil(float64(jbService.JBBuiltIn.JobCount) / float64(jrconstant.PerPage)))
 	var joblistings []model.JobListing
 	for page := 1; page <= total_pages; page++ {
 		err := jbService.RequestJobs(page, category_id)
