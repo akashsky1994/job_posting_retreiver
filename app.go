@@ -7,7 +7,6 @@ import (
 	"job_posting_retreiver/handler"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -76,15 +75,9 @@ func (app *AppConfig) AttachCron() {
 // FileServer conveniently sets up a http.FileServer handler to serve
 // static files from a http.FileSystem.
 func (app *AppConfig) FileServer() {
-	var path string = "/files"
-	workDir, _ := os.Getwd()
-	filesDir := http.Dir(filepath.Join(workDir, "data"))
+	filesDir := http.Dir("data")
 
-	if strings.ContainsAny(path, "{}*") {
-		panic("FileServer does not permit any URL parameters.")
-	}
-
-	app.Router.Get(path, func(w http.ResponseWriter, r *http.Request) {
+	app.Router.Get("/static/*", func(w http.ResponseWriter, r *http.Request) {
 		rctx := chi.RouteContext(r.Context())
 		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
 		fs := http.StripPrefix(pathPrefix, http.FileServer(filesDir))
