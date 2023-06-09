@@ -4,7 +4,7 @@ data "digitalocean_ssh_key" "ssh_key" {
 }
 
 resource "digitalocean_droplet" "jobretreiver" {
-  image = "ubuntu-20-04-x64"
+  image = "ubuntu-22-10-x64"
   name = "jobretreiver"
   region = "nyc3"
   size = "s-1vcpu-1gb"
