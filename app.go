@@ -1,30 +1,26 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"io"
+	"job_posting_retreiver/config"
 	"job_posting_retreiver/handler"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 )
 
-func New() (*AppConfig, error) {
-	var err error
-	var conf AppConfig
+type AppConfig struct {
+	*config.Config
+}
 
-	conf.AttachLogger()
-	conf.AttachRouter()
-	conf.AttachCron()
-	conf.FileServer()
-	conf.PrintRoutes()
-	return &conf, err
+func New() *AppConfig {
+	return &AppConfig{
+		config.NewConfig("./config"),
+	}
 }
 
 func (app *AppConfig) AttachLogger() error {
@@ -42,31 +38,13 @@ func (app *AppConfig) AttachLogger() error {
 	return nil
 }
 
-func (app *AppConfig) AttachRouter() {
-	app.Router = chi.NewRouter()
-	app.Router.Use(
-		middleware.Heartbeat("/ping"),
-		middleware.Throttle(1),
-		middleware.RequestID,
-		middleware.Logger,
-		middleware.RedirectSlashes, // Redirect slashes to no slash URL versions
-		middleware.Recoverer,       // Recover from panics without crashing server
-		middleware.CleanPath,
-	)
-	app.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
-	app.Router.Route("/builtin", func(r chi.Router) {
-		r.Mount("/v1", BuiltInRoutes())
-	})
-}
-
 func (app *AppConfig) AttachCron() {
 	app.Cron = cron.New()
 	app.Cron.AddFunc("@daily", func() {
 		app.Logger.Info("Added Cron")
-		handler.FetchBuiltInJobs("147")
-		handler.FetchBuiltInJobs("149")
+		builtinhandler := handler.NewBuiltInHandler(app.Config)
+		builtinhandler.FetchJobs("147")
+		builtinhandler.FetchJobs("149")
 	})
 	app.Cron.Start()
 	app.Logger.Infof("Cron Info: %+v\n", app.Cron.Entries())
@@ -94,12 +72,4 @@ func (app *AppConfig) PrintRoutes() {
 	if err := chi.Walk(app.Router, walkFunc); err != nil {
 		app.Logger.Panicf("Logging err: %s\n", err.Error()) // panic if there is an error
 	}
-}
-
-func RespondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-	fmt.Println(payload)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
 }

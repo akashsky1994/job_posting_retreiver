@@ -5,33 +5,34 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+
+	"github.com/go-chi/chi/v5/middleware"
 )
 
-func BuiltInRoutes() *chi.Mux {
+func (app *AppConfig) AttachRouter() {
+	app.Router = chi.NewRouter()
+	app.Router.Use(
+		middleware.Heartbeat("/ping"),
+		middleware.Throttle(1),
+		middleware.RequestID,
+		middleware.Logger,
+		middleware.RedirectSlashes, // Redirect slashes to no slash URL versions
+		middleware.Recoverer,       // Recover from panics without crashing server
+		middleware.CleanPath,
+	)
+	app.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("welcome"))
+	})
+	app.Router.Route("/builtin", func(r chi.Router) {
+		builtinhandler := handler.NewBuiltInHandler(app.Config)
+		r.Mount("/v1", BuiltInRoutes(builtinhandler))
+	})
+}
+
+func BuiltInRoutes(bihandler *handler.BuiltInHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		// Seek, verify and validate JWT tokens
-		// router.Use(jwtauth.Verifier(tokenAuth))
-		// router.Use(jwtauth.Authenticator)
-		// router.Use(newRelicMiddleWare)
-		// router.Use(pageLimitMiddleWare)
-
-		router.Get("/jobs/{category_id}", func(res http.ResponseWriter, req *http.Request) {
-			category_id := chi.URLParam(req, "category_id")
-			err := handler.FetchBuiltInJobs(category_id)
-			if err != nil {
-				panic(err)
-			}
-			message := map[string]string{"message": "Fetching Successful"}
-			RespondwithJSON(res, http.StatusOK, message)
-
-			// http.Redirect(res, req, filepath, http.StatusOK)
-			// res.WriteHeader(http.StatusOK)
-			// res.Header().Set("Content-Type", "application/octet-stream")
-			// res.Write(fileBytes)
-			// return
-		})
-
+		router.Get("/jobs/{category_id}", bihandler.FetchJobsHandler)
 	})
 	return router
 }

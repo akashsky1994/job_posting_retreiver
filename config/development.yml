@@ -1,0 +1,2 @@
+Env: "development"
+ServerPort: "8080"
