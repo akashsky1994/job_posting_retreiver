@@ -1,4 +1,4 @@
-# job_posting_retreiver
+# Job Posting Aggregator
 Fetches jobs from multiple sources into single csv
 
 
