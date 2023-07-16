@@ -28,4 +28,4 @@ EXPOSE 8080
 
 # Run executable
 #CMD ["./vanir"]
-ENTRYPOINT /go/bin/job_posting_retreiver --port 8080
+ENTRYPOINT /go/bin/job_posting_retreiver --env production

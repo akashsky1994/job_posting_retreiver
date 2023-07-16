@@ -1,15 +1,21 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 )
 
 func main() {
-	app := New()
+	var env string
+	flag.StringVar(&env, "env", "development", "sets environment type")
+	flag.Parse()
+	app := New(env)
 	// if err != nil {
 	// 	log.Fatalln("Could not start server:", err)
 	// }
+
 	app.AttachLogger()
+	app.SetupDB()
 	app.AttachRouter()
 	app.AttachCron()
 	app.FileServer()

@@ -48,3 +48,12 @@ resource "digitalocean_reserved_ip_assignment" "jobretreiverip" {
   ip_address = data.digitalocean_reserved_ip.myip.ip_address
   droplet_id = digitalocean_droplet.jobretreiver.id
 }
+
+data "digitalocean_volume" "db_storage" {
+  name   = "db-volume"
+  region = "nyc3"
+}
+resource "digitalocean_volume_attachment" "db_volume" {
+  droplet_id = digitalocean_droplet.jobretreiver.id
+  volume_id  = data.digitalocean_volume.db_storage.id
+}

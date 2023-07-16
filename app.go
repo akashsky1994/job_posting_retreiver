@@ -4,6 +4,7 @@ import (
 	"io"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/handler"
+	"job_posting_retreiver/model"
 	"net/http"
 	"os"
 	"strings"
@@ -11,15 +12,17 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type AppConfig struct {
 	*config.Config
 }
 
-func New() *AppConfig {
+func New(env string) *AppConfig {
 	return &AppConfig{
-		config.NewConfig("./config"),
+		config.NewConfig(env, "./config"),
 	}
 }
 
@@ -71,5 +74,25 @@ func (app *AppConfig) PrintRoutes() {
 	}
 	if err := chi.Walk(app.Router, walkFunc); err != nil {
 		app.Logger.Panicf("Logging err: %s\n", err.Error()) // panic if there is an error
+	}
+}
+
+func (app *AppConfig) SetupDB() {
+	db, err := gorm.Open(sqlite.Open(app.DBPath), &gorm.Config{
+		CreateBatchSize: 1,
+	})
+	db = db.Session(&gorm.Session{CreateBatchSize: 1})
+	if err != nil {
+		app.Logger.Panicf("failed to connect database", err.Error())
+	}
+	app.DB = db
+
+	// Migration
+	err = app.Config.DB.AutoMigrate(
+		&model.JobListing{},
+		&model.Company{},
+	)
+	if err != nil {
+		app.Logger.Error("Error Runing Automigration", err.Error())
 	}
 }
