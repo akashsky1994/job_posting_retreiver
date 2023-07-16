@@ -9,10 +9,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/glebarez/sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 

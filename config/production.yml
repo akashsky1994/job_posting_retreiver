@@ -1,3 +1,3 @@
 Env: "production"
 ServerPort: "8080"
-DBPath: /mnt/db_volume/job_aggregator.db
+DBPath: /db_volume/job_aggregator.db
