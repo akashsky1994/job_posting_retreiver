@@ -12,15 +12,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type JobBoardService struct {
+type BuiltInService struct {
 	JBBuiltIn *model.BuiltInOutput
 }
 
-func NewJobBoardService(builtin *model.BuiltInOutput) *JobBoardService {
-	return &JobBoardService{JBBuiltIn: builtin}
+func NewBuiltInService(builtin *model.BuiltInOutput) *BuiltInService {
+	return &BuiltInService{JBBuiltIn: builtin}
 }
 
-func (jbservice *JobBoardService) RequestJobs(page int, category_id string) error {
+func (jbservice *BuiltInService) RequestJobs(page int, category_id string) error {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", jrconstant.BuiltInURI, nil)
 	if err != nil {

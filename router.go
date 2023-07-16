@@ -27,12 +27,25 @@ func (app *AppConfig) AttachRouter() {
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
 		r.Mount("/v1", BuiltInRoutes(builtinhandler))
 	})
+	app.Router.Route("/jobs", func(r chi.Router) {
+		jobhandler := handler.NewJobHandler(app.Config)
+		r.Mount("/v1", JobRoutes(jobhandler))
+	})
 }
 
 func BuiltInRoutes(bihandler *handler.BuiltInHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		router.Get("/jobs/{category_id}", bihandler.FetchJobsHandler)
+		router.Get("/{category_id}", bihandler.FetchJobsHandler)
+	})
+	return router
+}
+
+func JobRoutes(jobhandler *handler.JobHandler) *chi.Mux {
+	router := chi.NewRouter()
+	router.Group(func(router chi.Router) {
+		router.Get("/list", jobhandler.ListJobs)
+		router.Post("/add", jobhandler.AddJobs)
 	})
 	return router
 }

@@ -8,11 +8,13 @@ import (
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
-func NewConfig(configPaths ...string) *Config {
+func NewConfig(env_type string, configPaths ...string) *Config {
+	fmt.Println(env_type)
 	v := viper.New()
-	v.SetConfigName(getenv("JB_ENV", "development"))
+	v.SetConfigName(getenv("JB_ENV", env_type))
 	v.SetConfigType("yaml")
 	v.AutomaticEnv()
 	v.SetDefault("ServerPort", 8080)
@@ -29,11 +31,13 @@ func NewConfig(configPaths ...string) *Config {
 }
 
 type Config struct {
+	DB         *gorm.DB // the shared DB ORM object
 	Router     *chi.Mux
 	Logger     *log.Logger
 	Cron       *cron.Cron
 	Env        string
 	ServerPort string
+	DBPath     string
 }
 
 func getenv(key, fallback string) string {

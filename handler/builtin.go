@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/errors"
 	"job_posting_retreiver/model"
@@ -14,17 +13,18 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/gocarina/gocsv"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm/clause"
 )
 
 type BuiltInHandler struct {
-	repo   repository.JobBoardService
+	repo   repository.BuiltInService
 	config *config.Config
 }
 
 func NewBuiltInHandler(config *config.Config) *BuiltInHandler {
 	var builtin *model.BuiltInOutput
 	return &BuiltInHandler{
-		repo:   *repository.NewJobBoardService(builtin),
+		repo:   *repository.NewBuiltInService(builtin),
 		config: config,
 	}
 }
@@ -62,16 +62,44 @@ func (bh *BuiltInHandler) FetchJobs(category_id string) error {
 
 		for _, company := range bh.repo.JBBuiltIn.Companies {
 			for _, job := range company.Jobs {
-				var joblisting model.JobListing
-				joblisting.Company = company.Company.Title
-				joblisting.JobLink = job.JobLink
-				joblisting.JobTitle = job.JobTitle
-				joblisting.Location = job.Location
-				joblisting.Remote = job.Remote
+
+				// Get Company ID if exists in DB else create new entry
+				db_company := model.Company{
+					Name: company.Company.Title,
+				}
+				err := bh.config.DB.FirstOrCreate(&db_company, model.Company{Name: company.Company.Title}).Error
+				if err != nil {
+					bh.config.Logger.Warn(err)
+				}
+
+				// Create Job Object
+				joblisting := model.JobListing{
+					JobLink:  job.JobLink,
+					JobTitle: job.JobTitle,
+					OrgName:  company.Company.Title,
+					Location: job.Location,
+					Remote:   job.Remote,
+					Company: model.Company{
+						ID:   db_company.ID,
+						Name: company.Company.Title,
+					},
+					Source: "builtin",
+				}
 				joblistings = append(joblistings, joblisting)
 			}
 		}
 	}
+
+	// Saving to DB
+	err = bh.config.DB.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "job_link"}},
+		DoUpdates: clause.AssignmentColumns([]string{"job_title", "location", "company_id", "updated_at", "source"}),
+	}).Create(&joblistings).Error
+	if err != nil {
+		return errors.DataProcessingError.Wrap(err, "Error Adding jobs to DB", logrus.ErrorLevel)
+	}
+
+	// Saving to JSON for history management
 	jsonArr, err := json.Marshal(joblistings)
 	if err != nil {
 		return errors.DataProcessingError.Wrap(err, "Error Loading data into JSON", logrus.ErrorLevel)
@@ -82,6 +110,7 @@ func (bh *BuiltInHandler) FetchJobs(category_id string) error {
 		return errors.Unexpected.Wrap(err, "Error Writing data into output file", logrus.ErrorLevel)
 	}
 
+	// Saving to JSON for legacy maintenance
 	csvArr, err := gocsv.MarshalString(&joblistings)
 	if err != nil {
 		return errors.DataProcessingError.Wrap(err, "Error Converting byte data into csv", logrus.ErrorLevel)
@@ -97,7 +126,7 @@ func (bh *BuiltInHandler) FetchJobs(category_id string) error {
 
 func RespondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
-	fmt.Println(payload)
+	// fmt.Println(payload)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
