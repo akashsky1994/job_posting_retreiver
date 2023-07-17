@@ -27,6 +27,7 @@ func NewConfig(env_type string, configPaths ...string) *Config {
 	}
 	var conf Config
 	v.Unmarshal(&conf)
+	conf.DBPath = getenv("DBPath", conf.DBPath)
 	return &conf
 }
 
