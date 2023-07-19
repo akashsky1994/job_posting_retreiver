@@ -12,7 +12,7 @@ type JobListing struct {
 	JobLink   string    `gorm:"unique;column:job_link;not_null;type:varchar(255);"`
 	JobTitle  string    `gorm:"column:job_title;not_null;type:varchar(100);"`
 	Location  string    `gorm:"column:location;type:varchar(100);"`
-	Remote    string    `gorm:"column:remote;type:varchar(100);"`
+	Remote    bool      `gorm:"column:remote;"`
 	Status    string    `gorm:"column:status;default:active;not_null"`
 	CreatedAt time.Time `gorm:"column:created_at;not_null"`
 	UpdatedAt time.Time `gorm:"column:updated_at;not_null"`

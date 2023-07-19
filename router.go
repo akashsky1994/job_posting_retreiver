@@ -27,6 +27,14 @@ func (app *AppConfig) AttachRouter() {
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
 		r.Mount("/v1", BuiltInRoutes(builtinhandler))
 	})
+	app.Router.Route("/simplify", func(r chi.Router) {
+		simplifyhandler := handler.NewSimplifyHandler(app.Config)
+		r.Mount("/v1", SimplifyRoutes(simplifyhandler))
+	})
+	app.Router.Route("/trueup", func(r chi.Router) {
+		simplifyhandler := handler.NewTrueupHandler(app.Config)
+		r.Mount("/v1", TrueUpRoutes(simplifyhandler))
+	})
 	app.Router.Route("/jobs", func(r chi.Router) {
 		jobhandler := handler.NewJobHandler(app.Config)
 		r.Mount("/v1", JobRoutes(jobhandler))
@@ -36,7 +44,23 @@ func (app *AppConfig) AttachRouter() {
 func BuiltInRoutes(bihandler *handler.BuiltInHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		router.Get("/{category_id}", bihandler.FetchJobsHandler)
+		router.Get("/fetch/{category_id}", bihandler.FetchJobsHandler)
+	})
+	return router
+}
+
+func SimplifyRoutes(shandler *handler.SimplifyHandler) *chi.Mux {
+	router := chi.NewRouter()
+	router.Group(func(router chi.Router) {
+		router.Get("/fetch", shandler.FetchJobsHandler)
+	})
+	return router
+}
+
+func TrueUpRoutes(thandler *handler.TrueupHandler) *chi.Mux {
+	router := chi.NewRouter()
+	router.Group(func(router chi.Router) {
+		router.Get("/fetch", thandler.FetchJobsHandler)
 	})
 	return router
 }

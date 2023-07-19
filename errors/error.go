@@ -10,6 +10,7 @@ import (
 const (
 	NoType              ErrorType = ""
 	BadRequest          ErrorType = "BAD_REQUEST"
+	NotImplementedError ErrorType = "NOT_IMPLEMENTED"
 	NotFound            ErrorType = "NOT_FOUND"
 	Unexpected          ErrorType = "UNEXPECTED"
 	ExternalAPIError    ErrorType = "EXTERNAL_API_ERROR"

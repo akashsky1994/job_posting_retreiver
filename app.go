@@ -44,10 +44,19 @@ func (app *AppConfig) AttachLogger() error {
 func (app *AppConfig) AttachCron() {
 	app.Cron = cron.New()
 	app.Cron.AddFunc("@daily", func() {
-		app.Logger.Info("Added Cron")
+		app.Logger.Info("BuiltIn Job Retreiver Cron Added")
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
 		builtinhandler.FetchJobs("147")
 		builtinhandler.FetchJobs("149")
+
+		app.Logger.Info("Simplify Job Retreiver Cron Added")
+		simplifyhandler := handler.NewSimplifyHandler(app.Config)
+		simplifyhandler.FetchJobs()
+
+		app.Logger.Info("Trueup Job Retreiver Cron Added")
+		trueuphandler := handler.NewTrueupHandler(app.Config)
+		trueuphandler.FetchJobs()
+
 	})
 	app.Cron.Start()
 	app.Logger.Infof("Cron Info: %+v\n", app.Cron.Entries())
