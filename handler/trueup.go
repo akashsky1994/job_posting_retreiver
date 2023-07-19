@@ -54,7 +54,7 @@ func (handler *TrueupHandler) FetchJobs() error {
 				return err
 			}
 			total_pages = results.NbPages
-			handler.config.Logger.Info(results.NbHits, results.NbPages, results.HitsPerPage, results.Page)
+			// handler.config.Logger.Info(results.NbHits, results.NbPages, results.HitsPerPage, results.Page)
 			err = results.UnmarshalHits(&records)
 			if err != nil {
 				return errors.Unexpected.Wrap(err, "Error Unmarshaling hits from algolia response: simplify", log.ErrorLevel)

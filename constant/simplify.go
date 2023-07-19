@@ -3,7 +3,7 @@ package constant
 import "github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 
 var (
-	SIMPLIFY_INDEX           string = "JOBS"
+	SIMPLIFY_INDEX           string = "JOBS_updated_date_desc"
 	ALGOLIA_SIMPLIFY_API_KEY string = "068125d0565c0f7230bd7becf65c46f1"
 	ALGOLIA_SIMPLIFY_APP_ID  string = "4N95P1L3C8"
 	SIMPLIFY_QUERY_PARAMS           = []interface{}{

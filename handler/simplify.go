@@ -56,7 +56,7 @@ func (handler *SimplifyHandler) FetchJobs() error {
 				return err
 			}
 
-			handler.config.Logger.Info(results.NbHits, results.NbPages, results.HitsPerPage)
+			// handler.config.Logger.Info(results.NbHits, results.NbPages, results.HitsPerPage)
 			total_pages = results.NbPages
 			err = results.UnmarshalHits(&records)
 			if err != nil {
