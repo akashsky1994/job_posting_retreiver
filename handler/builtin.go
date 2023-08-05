@@ -36,23 +36,14 @@ func (bh *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Re
 	}
 	message := map[string]string{"message": "Fetching Successful"}
 	RespondwithJSON(res, http.StatusOK, message)
-	// http.Redirect(res, req, filepath, http.StatusOK)
-	// res.WriteHeader(http.StatusOK)
-	// res.Header().Set("Content-Type", "application/octet-stream")
-	// res.Write(fileBytes)
-	// return
 }
 
 func (handler *BuiltInHandler) FetchJobs(category_id string) error {
-	err := handler.repo.RequestJobs(1, category_id)
-	if err != nil {
-		return err
-	}
-
-	total_pages := handler.repo.JBBuiltIn.PageCount
+	total_pages := 1
+	currPage := 0
 	var joblistings []model.JobListing
-	for page := 1; page <= total_pages; page++ {
-		err := handler.repo.RequestJobs(page, category_id)
+	for currPage != total_pages {
+		response, err := handler.repo.RequestJobs(currPage, category_id)
 		if err != nil {
 			return err
 		}
@@ -84,6 +75,7 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 				joblistings = append(joblistings, joblisting)
 			}
 		}
+		currPage += 1
 	}
 
 	err = handler.dao.SaveJobs(joblistings)
