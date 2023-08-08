@@ -18,3 +18,5 @@ var (
 		{"level:2", "level:3", "level:4"},
 	}
 )
+
+var TRUEUP_DATA_PATH = "./data/trueup"

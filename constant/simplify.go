@@ -26,3 +26,5 @@ var (
 		{"functions:Software Engineering", "functions:DevOps & Infrastructure", "functions:AI & Machine Learning", "functions:Data & Analytics", "functions:Lab & Research"},
 	}
 )
+
+var SIMPLIFY_DATA_PATH = "./data/simplify"

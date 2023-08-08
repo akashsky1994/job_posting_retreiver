@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"job_posting_retreiver/config"
+	"job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
 	"job_posting_retreiver/model"
 	"job_posting_retreiver/repository"
+	"job_posting_retreiver/utils"
 	"net/http"
 
 	"job_posting_retreiver/dal"
@@ -20,9 +23,10 @@ func NewTrueupHandler(config *config.Config) *TrueupHandler {
 	var record *model.TrueUpRecord
 	return &TrueupHandler{
 		&AlgoliaHandler{
-			repo:   *repository.NewTrueUpService(record),
-			dao:    *dal.NewDataAccessService(config.DB),
-			config: config,
+			repo:      *repository.NewTrueUpService(record),
+			dao:       *dal.NewDataAccessService(config.DB),
+			config:    config,
+			data_path: constant.TRUEUP_DATA_PATH,
 		},
 	}
 }
@@ -50,6 +54,14 @@ func (handler *TrueupHandler) FetchJobs() error {
 			var records []model.TrueUpRecord
 			var joblistings []model.JobListing
 			results, err := handler.repo.RequestJobs(currPage, []interface{}{param})
+			if err != nil {
+				return err
+			}
+			payload, err := json.Marshal(results.Hits)
+			if err != nil {
+				return err
+			}
+			err = utils.WriteRawDataToJSONFile(payload, handler.data_path)
 			if err != nil {
 				return err
 			}

@@ -11,9 +11,10 @@ import (
 )
 
 type AlgoliaHandler struct {
-	repo   repository.AlgoliaConfig
-	dao    dal.DataAccessObject
-	config *config.Config
+	repo      repository.AlgoliaConfig
+	dao       dal.DataAccessObject
+	config    *config.Config
+	data_path string
 }
 
 func (handler *AlgoliaHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Request) {

@@ -14,10 +14,10 @@ import (
 type BuiltInService struct {
 	uri     string
 	queries map[string]string
-	record  *model.BuiltInOutput
+	record  *model.BuiltInRecord
 }
 
-func NewBuiltInService(builtin *model.BuiltInOutput) *BuiltInService {
+func NewBuiltInService(builtin *model.BuiltInRecord) *BuiltInService {
 	return &BuiltInService{
 		uri:     jrconstant.BuiltInURI,
 		record:  builtin,
@@ -53,5 +53,4 @@ func (jbservice *BuiltInService) RequestJobs(page int, category_id string) ([]by
 		return nil, errors.Unexpected.Wrap(err, "Error Loading data from BuiltIn API", log.ErrorLevel)
 	}
 	return resbody, nil
-	// json.Unmarshal(resbody, &jbservice.JBBuiltIn)
 }

@@ -1,6 +1,6 @@
 package model
 
-type BuiltInOutput struct {
+type BuiltInRecord struct {
 	JobCount  int `json:"job_all_count"`
 	PageCount int `json:"pagination_count"`
 	Companies []struct {

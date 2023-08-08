@@ -1,28 +1,33 @@
 package handler
 
 import (
+	"encoding/json"
 	"job_posting_retreiver/config"
+	"job_posting_retreiver/constant"
 	"job_posting_retreiver/dal"
 	"job_posting_retreiver/errors"
 	"job_posting_retreiver/model"
 	"job_posting_retreiver/repository"
+	"job_posting_retreiver/utils"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type BuiltInHandler struct {
-	repo   repository.BuiltInService
-	dao    dal.DataAccessObject
-	config *config.Config
+	repo      repository.BuiltInService
+	dao       dal.DataAccessObject
+	config    *config.Config
+	data_path string
 }
 
 func NewBuiltInHandler(config *config.Config) *BuiltInHandler {
-	var builtin *model.BuiltInOutput
+	var builtin *model.BuiltInRecord
 	return &BuiltInHandler{
-		repo:   *repository.NewBuiltInService(builtin),
-		dao:    *dal.NewDataAccessService(config.DB),
-		config: config,
+		repo:      *repository.NewBuiltInService(builtin),
+		dao:       *dal.NewDataAccessService(config.DB),
+		config:    config,
+		data_path: constant.BUILTIN_DATA_PATH,
 	}
 }
 
@@ -43,18 +48,25 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 	currPage := 0
 	var joblistings []model.JobListing
 	for currPage != total_pages {
+		var records model.BuiltInRecord
 		response, err := handler.repo.RequestJobs(currPage, category_id)
 		if err != nil {
 			return err
 		}
-
-		for _, company := range handler.repo.JBBuiltIn.Companies {
+		err = utils.WriteRawDataToJSONFile(response, handler.data_path)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(response, &records)
+		if err != nil {
+			return err
+		}
+		for _, company := range records.Companies {
 			db_company, err := handler.dao.GetCompany(company.Company.Title)
 			if err != nil {
 				handler.config.Logger.Warn(err)
 			}
 			for _, job := range company.Jobs {
-
 				remote := true
 				if job.Remote != "REMOTE_ENABLED" {
 					remote = false
@@ -78,7 +90,7 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 		currPage += 1
 	}
 
-	err = handler.dao.SaveJobs(joblistings)
+	err := handler.dao.SaveJobs(joblistings)
 	if err != nil {
 		return err
 	}
