@@ -26,3 +26,5 @@ var BuiltInURIQueries = map[string]string{
 	"hybridEnabled":     "true",
 	"national":          "true",
 }
+
+var BUILTIN_DATA_PATH = "./data/builtin"

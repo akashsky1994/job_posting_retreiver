@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	jrconstant "job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
@@ -13,22 +12,28 @@ import (
 )
 
 type BuiltInService struct {
-	JBBuiltIn *model.BuiltInOutput
+	uri     string
+	queries map[string]string
+	record  *model.BuiltInRecord
 }
 
-func NewBuiltInService(builtin *model.BuiltInOutput) *BuiltInService {
-	return &BuiltInService{JBBuiltIn: builtin}
+func NewBuiltInService(builtin *model.BuiltInRecord) *BuiltInService {
+	return &BuiltInService{
+		uri:     jrconstant.BuiltInURI,
+		record:  builtin,
+		queries: jrconstant.BuiltInURIQueries,
+	}
 }
 
-func (jbservice *BuiltInService) RequestJobs(page int, category_id string) error {
+func (jbservice *BuiltInService) RequestJobs(page int, category_id string) ([]byte, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", jrconstant.BuiltInURI, nil)
+	req, err := http.NewRequest("GET", jbservice.uri, nil)
 	if err != nil {
-		return errors.Unexpected.Wrap(err, "Something went wrong while creating new request", log.ErrorLevel)
+		return nil, errors.Unexpected.Wrap(err, "Something went wrong while creating new request", log.ErrorLevel)
 	}
 	q := req.URL.Query()
 
-	for key, val := range jrconstant.BuiltInURIQueries {
+	for key, val := range jbservice.queries {
 		q.Add(key, val)
 	}
 	q.Set("page", strconv.Itoa(page))
@@ -38,15 +43,14 @@ func (jbservice *BuiltInService) RequestJobs(page int, category_id string) error
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.ExternalAPIError.Wrap(err, "Error getting response from built in api", log.ErrorLevel)
+		return nil, errors.ExternalAPIError.Wrap(err, "Error getting response from built in api", log.ErrorLevel)
 	}
 
 	defer resp.Body.Close()
 
 	resbody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return errors.Unexpected.Wrap(err, "Error Loading data from BuiltIn API", log.ErrorLevel)
+		return nil, errors.Unexpected.Wrap(err, "Error Loading data from BuiltIn API", log.ErrorLevel)
 	}
-	json.Unmarshal(resbody, &jbservice.JBBuiltIn)
-	return nil
+	return resbody, nil
 }

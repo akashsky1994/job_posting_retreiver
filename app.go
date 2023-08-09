@@ -49,9 +49,9 @@ func (app *AppConfig) AttachCron() {
 		builtinhandler.FetchJobs("147")
 		builtinhandler.FetchJobs("149")
 
-		app.Logger.Info("Simplify Job Retreiver Cron Added")
-		simplifyhandler := handler.NewSimplifyHandler(app.Config)
-		simplifyhandler.FetchJobs()
+		// app.Logger.Info("Simplify Job Retreiver Cron Added")
+		// simplifyhandler := handler.NewSimplifyHandler(app.Config)
+		// simplifyhandler.FetchJobs()
 
 		app.Logger.Info("Trueup Job Retreiver Cron Added")
 		trueuphandler := handler.NewTrueupHandler(app.Config)
@@ -100,6 +100,7 @@ func (app *AppConfig) SetupDB() {
 	err = app.Config.DB.AutoMigrate(
 		&model.JobListing{},
 		&model.Company{},
+		&model.FileLogs{},
 	)
 	if err != nil {
 		app.Logger.Error("Error Runing Automigration", err.Error())

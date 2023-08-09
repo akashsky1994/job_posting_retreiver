@@ -27,10 +27,10 @@ func (app *AppConfig) AttachRouter() {
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
 		r.Mount("/v1", BuiltInRoutes(builtinhandler))
 	})
-	app.Router.Route("/simplify", func(r chi.Router) {
-		simplifyhandler := handler.NewSimplifyHandler(app.Config)
-		r.Mount("/v1", SimplifyRoutes(simplifyhandler))
-	})
+	// app.Router.Route("/simplify", func(r chi.Router) {
+	// 	simplifyhandler := handler.NewSimplifyHandler(app.Config)
+	// 	r.Mount("/v1", SimplifyRoutes(simplifyhandler))
+	// })
 	app.Router.Route("/trueup", func(r chi.Router) {
 		simplifyhandler := handler.NewTrueupHandler(app.Config)
 		r.Mount("/v1", TrueUpRoutes(simplifyhandler))

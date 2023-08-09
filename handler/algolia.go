@@ -11,9 +11,10 @@ import (
 )
 
 type AlgoliaHandler struct {
-	repo   repository.AlgoliaConfig
-	dao    dal.DataAccessObject
-	config *config.Config
+	repo      repository.AlgoliaConfig
+	dao       dal.DataAccessObject
+	config    *config.Config
+	data_path string
 }
 
 func (handler *AlgoliaHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Request) {
@@ -22,6 +23,7 @@ func (handler *AlgoliaHandler) FetchJobsHandler(res http.ResponseWriter, req *ht
 		errType, severity := errors.GetTypeAndLogLevel(err)
 		handler.config.Logger.Log(severity, err)
 		HandleError(res, err, errType)
+		return
 	}
 	message := map[string]string{"message": "Fetching Successful"}
 	RespondwithJSON(res, http.StatusOK, message)
