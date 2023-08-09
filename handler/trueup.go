@@ -37,6 +37,7 @@ func (handler *TrueupHandler) FetchJobsHandler(res http.ResponseWriter, req *htt
 		errType, severity := errors.GetTypeAndLogLevel(err)
 		handler.config.Logger.Log(severity, err)
 		HandleError(res, err, errType)
+		return
 	}
 	message := map[string]string{"message": "Fetching Successful"}
 	RespondwithJSON(res, http.StatusOK, message)
@@ -61,7 +62,11 @@ func (handler *TrueupHandler) FetchJobs() error {
 			if err != nil {
 				return err
 			}
-			err = utils.WriteRawDataToJSONFile(payload, handler.data_path)
+			file_path, err := utils.WriteRawDataToJSONFile(payload, handler.data_path)
+			if err != nil {
+				return err
+			}
+			err = handler.dao.SaveFile(file_path, "Trueup")
 			if err != nil {
 				return err
 			}

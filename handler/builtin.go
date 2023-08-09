@@ -38,6 +38,7 @@ func (bh *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Re
 		errType, severity := errors.GetTypeAndLogLevel(err)
 		bh.config.Logger.Log(severity, err)
 		HandleError(res, err, errType)
+		return
 	}
 	message := map[string]string{"message": "Fetching Successful"}
 	RespondwithJSON(res, http.StatusOK, message)
@@ -53,7 +54,11 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 		if err != nil {
 			return err
 		}
-		err = utils.WriteRawDataToJSONFile(response, handler.data_path)
+		file_path, err := utils.WriteRawDataToJSONFile(response, handler.data_path)
+		if err != nil {
+			return err
+		}
+		err = handler.dao.SaveFile(file_path, "BuiltIn")
 		if err != nil {
 			return err
 		}

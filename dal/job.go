@@ -17,18 +17,6 @@ func NewDataAccessService(conn *gorm.DB) *DataAccessObject {
 	return &DataAccessObject{conn: conn}
 }
 
-func (dao *DataAccessObject) GetCompany(title string) (model.Company, error) {
-	// Get Company ID if exists in DB else create new entry
-	company := model.Company{
-		Name: title,
-	}
-	err := dao.conn.FirstOrCreate(&company, model.Company{Name: title}).Error
-	if err != nil {
-		return company, errors.DataProcessingError.Wrap(err, "Error getting Company from DB", log.ErrorLevel)
-	}
-	return company, nil
-}
-
 func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 	// Saving to DB
 	err := dao.conn.Clauses(clause.OnConflict{

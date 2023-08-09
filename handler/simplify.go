@@ -39,6 +39,7 @@ func (handler *SimplifyHandler) FetchJobsHandler(res http.ResponseWriter, req *h
 		errType, severity := errors.GetTypeAndLogLevel(err)
 		handler.config.Logger.Log(severity, err)
 		HandleError(res, err, errType)
+		return
 	}
 	message := map[string]string{"message": "Fetching Successful"}
 	RespondwithJSON(res, http.StatusOK, message)
@@ -63,7 +64,11 @@ func (handler *SimplifyHandler) FetchJobs() error {
 			if err != nil {
 				return err
 			}
-			err = utils.WriteRawDataToJSONFile(payload, handler.data_path)
+			file_path, err := utils.WriteRawDataToJSONFile(payload, handler.data_path)
+			if err != nil {
+				return err
+			}
+			err = handler.dao.SaveFile(file_path, "Simplify")
 			if err != nil {
 				return err
 			}
