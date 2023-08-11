@@ -10,8 +10,21 @@ services:
     restart: on-failure
     volumes:
       - .:/go-job-retreiver-docker
-      - /mnt:/db_volume:rw
+      # - /mnt:/db_volume:rw
     container_name: go-job-retreiver-docker-app
     environment:
-      - 'JB_ENV=production'
-      - 'DBPath=/db_volume/job_aggregator.db'
+      - 'JB_ENV=development'
+      - 'DBPath=job_aggregator.db'
+
+  postgres:
+    image: postgres
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+       
