@@ -10,7 +10,7 @@ services:
     restart: on-failure
     volumes:
       - .:/go-job-retreiver-docker
-      # - /mnt:/db_volume:rw
+      - /mnt:/db_volume:rw
     container_name: go-job-retreiver-docker-app
     environment:
       - 'JB_ENV=development'
