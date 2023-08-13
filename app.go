@@ -92,7 +92,7 @@ func (app *AppConfig) SetupDB() {
 	})
 	db = db.Session(&gorm.Session{CreateBatchSize: 1})
 	if err != nil {
-		app.Logger.Panicf("failed to connect database", err.Error())
+		app.Logger.Panicln("failed to connect database", err.Error())
 	}
 	app.DB = db
 
