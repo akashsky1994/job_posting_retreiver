@@ -1,11 +1,7 @@
 package repository
 
 import (
-	"fmt"
-	"job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
-	"job_posting_retreiver/model"
-	"time"
 
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
@@ -18,36 +14,18 @@ type AlgoliaConfig struct {
 	API_KEY      string
 	APP_ID       string
 	Params       []interface{}
-	Record       interface{}
 	FacetFilters [][]string
 }
 
 // index string, api_key string, app_id string, params []interface{}
-func NewSimplifyService(record *model.SimplifyRecord) *AlgoliaConfig {
+func NewAlgoliaService(source string, index string, api_key string, app_id string, params []interface{}, facetfilters [][]string) *AlgoliaConfig {
 	return &AlgoliaConfig{
-		Source:       "Simplify",
-		Index:        constant.SIMPLIFY_INDEX,
-		API_KEY:      constant.ALGOLIA_SIMPLIFY_API_KEY,
-		APP_ID:       constant.ALGOLIA_SIMPLIFY_APP_ID,
-		Params:       constant.SIMPLIFY_QUERY_PARAMS,
-		Record:       record,
-		FacetFilters: constant.SIMPLIFY_FACET_FILTERS,
-	}
-}
-
-// index string, api_key string, app_id string, params []interface{}
-func NewTrueUpService(record *model.TrueUpRecord) *AlgoliaConfig {
-	last_date := time.Now().AddDate(0, 0, -1)
-	timestamp := last_date.Unix()
-	params := append(constant.TRUEUP_QUERY_PARAMS, opt.NumericFilter("updated_at_timestamp>="+fmt.Sprint(timestamp)))
-	return &AlgoliaConfig{
-		Source:       "Trueup",
-		Index:        constant.TRUEUP_INDEX,
-		API_KEY:      constant.ALGOLIA_TRUEUP_API_KEY,
-		APP_ID:       constant.ALGOLIA_TRUEUP_APP_ID,
+		Source:       source,
+		Index:        index,
+		API_KEY:      api_key,
+		APP_ID:       app_id,
 		Params:       params,
-		Record:       record,
-		FacetFilters: constant.TRUEUP_FACET_FILTERS,
+		FacetFilters: facetfilters,
 	}
 }
 

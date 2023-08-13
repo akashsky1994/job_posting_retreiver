@@ -27,10 +27,10 @@ func (app *AppConfig) AttachRouter() {
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
 		r.Mount("/v1", BuiltInRoutes(builtinhandler))
 	})
-	// app.Router.Route("/simplify", func(r chi.Router) {
-	// 	simplifyhandler := handler.NewSimplifyHandler(app.Config)
-	// 	r.Mount("/v1", SimplifyRoutes(simplifyhandler))
-	// })
+	app.Router.Route("/simplify", func(r chi.Router) {
+		simplifyhandler := handler.NewSimplifyHandler(app.Config)
+		r.Mount("/v1", SimplifyRoutes(simplifyhandler))
+	})
 	app.Router.Route("/trueup", func(r chi.Router) {
 		simplifyhandler := handler.NewTrueupHandler(app.Config)
 		r.Mount("/v1", TrueUpRoutes(simplifyhandler))
@@ -52,7 +52,7 @@ func BuiltInRoutes(bihandler *handler.BuiltInHandler) *chi.Mux {
 func SimplifyRoutes(shandler *handler.SimplifyHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		router.Get("/fetch", shandler.FetchJobsHandler)
+		router.Get("/fetch", shandler.JobSourceHandler)
 	})
 	return router
 }

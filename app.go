@@ -48,6 +48,7 @@ func (app *AppConfig) AttachCron() {
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
 		builtinhandler.FetchJobs("147")
 		builtinhandler.FetchJobs("149")
+		builtinhandler.ProcessJobs()
 
 		// app.Logger.Info("Simplify Job Retreiver Cron Added")
 		// simplifyhandler := handler.NewSimplifyHandler(app.Config)
@@ -56,6 +57,7 @@ func (app *AppConfig) AttachCron() {
 		app.Logger.Info("Trueup Job Retreiver Cron Added")
 		trueuphandler := handler.NewTrueupHandler(app.Config)
 		trueuphandler.FetchJobs()
+		trueuphandler.ProcessJobs()
 
 	})
 	app.Cron.Start()
@@ -92,7 +94,7 @@ func (app *AppConfig) SetupDB() {
 	})
 	db = db.Session(&gorm.Session{CreateBatchSize: 1})
 	if err != nil {
-		app.Logger.Panicf("failed to connect database", err.Error())
+		app.Logger.Panicln("failed to connect database", err.Error())
 	}
 	app.DB = db
 

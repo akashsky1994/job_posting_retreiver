@@ -14,4 +14,4 @@ services:
     container_name: go-job-retreiver-docker-app
     environment:
       - 'JB_ENV=production'
-      - 'DBPath=/db_volume/job_aggregator.db'
+      - 'DBPath=/db_volume/db_volume/job_aggregator.db'
