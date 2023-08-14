@@ -12,7 +12,7 @@ type JobListing struct {
 	ID        uint           `gorm:"primary_key;autoIncrement"`
 	JobLink   string         `gorm:"unique;column:job_link;not_null;type:text;"`
 	JobTitle  string         `gorm:"column:job_title;not_null;type:text;"`
-	Location  pq.StringArray `gorm:"column:location;type:text[];"`
+	Locations pq.StringArray `gorm:"column:location;type:text[];"`
 	Remote    bool           `gorm:"column:remote;"`
 	Status    string         `gorm:"column:status;default:active;not_null"`
 	CreatedAt time.Time      `gorm:"column:created_at;not_null"`
@@ -21,6 +21,8 @@ type JobListing struct {
 	Company   Company `gorm:"foreignKey:CompanyID;references:ID"`
 	OrgName   string  `gorm:"column:org_name;not_null;type:varchar(100);"`
 	Source    string
+	FileLogID uint
+	FileLog   FileLog `gorm:"foreignKey:FileLogID;references:ID"`
 }
 
 type Company struct {
@@ -31,4 +33,12 @@ type Company struct {
 
 type Link struct {
 	ID uint `gorm:"primary_key;not_null;autoIncrement"`
+}
+
+type FileLog struct {
+	gorm.Model
+	ID       uint `gorm:"primary_key;autoIncrement"`
+	Source   string
+	FilePath string `gorm:"unique;not_null"`
+	Status   string
 }

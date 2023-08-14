@@ -12,9 +12,9 @@ import (
 	"job_posting_retreiver/utils"
 	"log"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/sirupsen/logrus"
 )
 
 type BuiltInHandler struct {
@@ -22,11 +22,13 @@ type BuiltInHandler struct {
 	dao       dal.DataAccessObject
 	config    *config.Config
 	data_path string
+	name      string
 }
 
 func NewBuiltInHandler(config *config.Config) *BuiltInHandler {
 	var builtin *model.BuiltInRecord
 	return &BuiltInHandler{
+		name:      "builtin",
 		repo:      *repository.NewBuiltInService(builtin),
 		dao:       *dal.NewDataAccessService(config.DB),
 		config:    config,
@@ -65,13 +67,16 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 
 		var records model.BuiltInRecord
 		err = json.Unmarshal(response, &records)
+		if err != nil {
+			return err
+		}
 		total_pages = records.PageCount
 
 		file_path, err := utils.WriteRawDataToJSONFile(response, handler.data_path)
 		if err != nil {
 			return err
 		}
-		err = handler.dao.SaveFile(file_path, "BuiltIn")
+		err = handler.dao.CreateFileLog(file_path, handler.name)
 		if err != nil {
 			return err
 		}
@@ -81,20 +86,15 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 }
 
 func (handler *BuiltInHandler) ProcessJobs() error {
-	dir_path := filepath.Join(handler.data_path, "raw_files")
-	files, err := ioutil.ReadDir(dir_path)
+	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		file_path := filepath.Join(dir_path, file.Name())
-		handler.config.Logger.Info("Reading file:", file_path)
+		handler.config.Logger.Info("Reading file:", file.FilePath)
 
-		content, err := ioutil.ReadFile(file_path)
+		content, err := ioutil.ReadFile(file.FilePath)
 		if err != nil {
 			log.Fatal("Error when opening file: ", err)
 		}
@@ -102,7 +102,7 @@ func (handler *BuiltInHandler) ProcessJobs() error {
 		var joblistings []model.JobListing
 		err = json.Unmarshal(content, &records)
 		if err != nil {
-			return err
+			return errors.Unexpected.Wrap(err, "Error Unmarshaling hits from builtin response", logrus.ErrorLevel)
 		}
 		for _, company := range records.Companies {
 			db_company, err := handler.dao.GetCompany(company.Company.Title)
@@ -116,21 +116,24 @@ func (handler *BuiltInHandler) ProcessJobs() error {
 				}
 				// Create Job Object
 				joblisting := model.JobListing{
-					JobLink:  utils.CleanURL(job.JobLink),
-					JobTitle: job.JobTitle,
-					OrgName:  company.Company.Title,
-					Location: []string{job.Location},
-					Remote:   remote,
-					Company: model.Company{
-						ID:   db_company.ID,
-						Name: company.Company.Title,
-					},
-					Source: "builtin",
+					JobLink:   utils.CleanURL(job.JobLink),
+					JobTitle:  job.JobTitle,
+					OrgName:   company.Company.Title,
+					Locations: []string{job.Location},
+					Remote:    remote,
+					Company:   db_company,
+					Source:    handler.name,
+					FileLog:   file,
 				}
 				joblistings = append(joblistings, joblisting)
 			}
 		}
 		err = handler.dao.SaveJobs(joblistings)
+		if err != nil {
+			return err
+		}
+		file.Status = "Completed"
+		err = handler.dao.UpdateFileLog(file)
 		if err != nil {
 			return err
 		}

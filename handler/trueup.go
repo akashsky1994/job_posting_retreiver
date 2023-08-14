@@ -11,7 +11,6 @@ import (
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
 	"net/http"
-	"path/filepath"
 	"time"
 
 	"job_posting_retreiver/dal"
@@ -25,6 +24,7 @@ type TrueupHandler struct {
 	dao       dal.DataAccessObject
 	config    *config.Config
 	data_path string
+	name      string
 }
 
 func NewTrueupHandler(config *config.Config) *TrueupHandler {
@@ -32,6 +32,7 @@ func NewTrueupHandler(config *config.Config) *TrueupHandler {
 	timestamp := last_date.Unix()
 	params := append(constant.TRUEUP_QUERY_PARAMS, opt.NumericFilter("updated_at_timestamp>="+fmt.Sprint(timestamp)))
 	return &TrueupHandler{
+		name: "trueup",
 		repo: repository.NewAlgoliaService(
 			"trueup",
 			constant.ALGOLIA_TRUEUP_INDEX,
@@ -86,12 +87,11 @@ func (handler *TrueupHandler) FetchJobs() error {
 			if err != nil {
 				return err
 			}
-			err = handler.dao.SaveFile(file_path, "Trueup")
+			err = handler.dao.CreateFileLog(file_path, handler.name)
 			if err != nil {
 				return err
 			}
 			total_pages = results.NbPages
-			// handler.config.Logger.Info(results.NbHits, results.NbPages, results.HitsPerPage, results.Page)
 
 			currPage += 1
 		}
@@ -100,20 +100,14 @@ func (handler *TrueupHandler) FetchJobs() error {
 }
 
 func (handler *TrueupHandler) ProcessJobs() error {
-	dir_path := filepath.Join(handler.data_path, "raw_files")
-	files, err := ioutil.ReadDir(dir_path)
+	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		file_path := filepath.Join(dir_path, file.Name())
-		handler.config.Logger.Info("Reading file:", file_path)
+		handler.config.Logger.Info("Reading file:", file.FilePath)
 
-		content, err := ioutil.ReadFile(file_path)
+		content, err := ioutil.ReadFile(file.FilePath)
 		if err != nil {
 			log.Fatal("Error when opening file: ", err)
 		}
@@ -134,16 +128,22 @@ func (handler *TrueupHandler) ProcessJobs() error {
 				remote = true
 			}
 			joblistings = append(joblistings, model.JobListing{
-				JobLink:  utils.CleanURL(job.JobLink),
-				JobTitle: job.JobTitle,
-				OrgName:  job.Company,
-				Location: []string{job.Location},
-				Remote:   remote,
-				Company:  db_company,
-				Source:   "trueup",
+				JobLink:   utils.CleanURL(job.JobLink),
+				JobTitle:  job.JobTitle,
+				OrgName:   job.Company,
+				Locations: []string{job.Location},
+				Remote:    remote,
+				Company:   db_company,
+				Source:    handler.name,
+				FileLog:   file,
 			})
 		}
 		err = handler.dao.SaveJobs(joblistings)
+		if err != nil {
+			return err
+		}
+		file.Status = "Completed"
+		err = handler.dao.UpdateFileLog(file)
 		if err != nil {
 			return err
 		}

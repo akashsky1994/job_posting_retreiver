@@ -11,7 +11,6 @@ import (
 	"job_posting_retreiver/utils"
 	"log"
 	"net/http"
-	"path/filepath"
 
 	"job_posting_retreiver/dal"
 
@@ -23,10 +22,12 @@ type SimplifyHandler struct {
 	dao       dal.DataAccessObject
 	config    *config.Config
 	data_path string
+	name      string
 }
 
 func NewSimplifyHandler(config *config.Config) *SimplifyHandler {
 	return &SimplifyHandler{
+		name: "simplify",
 		repo: repository.NewTypeSenseService(
 			"simplify",
 			constant.TYPESENSE_SIMPLIFY_COLLECTION,
@@ -68,7 +69,11 @@ func (handler *SimplifyHandler) FetchJobs() error {
 			return err
 		}
 		total_pages = (*results.Found) / results.RequestParams.PerPage
-		payload, err := json.Marshal(results.Hits)
+		var contents []*map[string]interface{}
+		for _, hit := range *results.Hits {
+			contents = append(contents, hit.Document)
+		}
+		payload, err := json.Marshal(contents)
 		if err != nil {
 			return err
 		}
@@ -76,7 +81,7 @@ func (handler *SimplifyHandler) FetchJobs() error {
 		if err != nil {
 			return err
 		}
-		err = handler.dao.SaveFile(file_path, "simplify")
+		err = handler.dao.CreateFileLog(file_path, handler.name)
 		if err != nil {
 			return err
 		}
@@ -87,19 +92,22 @@ func (handler *SimplifyHandler) FetchJobs() error {
 }
 
 func (handler *SimplifyHandler) ProcessJobs() error {
-	dir_path := filepath.Join(handler.data_path, "raw_files")
-	files, err := ioutil.ReadDir(dir_path)
+
+	// dir_path := filepath.Join(handler.data_path, "raw_files")
+	// files, err := ioutil.ReadDir(dir_path)
+	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		file_path := filepath.Join(dir_path, file.Name())
-		handler.config.Logger.Info("Reading file:", file_path)
+		// if file.IsDir() {
+		// 	continue
+		// }
 
-		content, err := ioutil.ReadFile(file_path)
+		// file_path := filepath.Join(dir_path, file.Name())
+		handler.config.Logger.Info("Reading file:", file.FilePath)
+
+		content, err := ioutil.ReadFile(file.FilePath)
 		if err != nil {
 			log.Fatal("Error when opening file: ", err)
 		}
@@ -115,16 +123,22 @@ func (handler *SimplifyHandler) ProcessJobs() error {
 				handler.config.Logger.Warn(err)
 			}
 			joblistings = append(joblistings, model.JobListing{
-				JobLink:  utils.CleanURL(job.JobLink),
-				JobTitle: job.JobTitle,
-				OrgName:  job.Company,
-				Location: job.Location,
-				Remote:   job.Remote,
-				Company:  db_company,
-				Source:   "simplify",
+				JobLink:   utils.CleanURL(job.JobLink),
+				JobTitle:  job.JobTitle,
+				OrgName:   job.Company,
+				Locations: job.Locations,
+				Remote:    job.Remote,
+				Company:   db_company,
+				Source:    handler.name,
+				FileLog:   file,
 			})
 		}
 		err = handler.dao.SaveJobs(joblistings)
+		if err != nil {
+			return err
+		}
+		file.Status = "Completed"
+		err = handler.dao.UpdateFileLog(file)
 		if err != nil {
 			return err
 		}
