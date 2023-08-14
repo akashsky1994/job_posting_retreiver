@@ -1,8 +1,4 @@
 
-data "digitalocean_ssh_key" "ssh_key" {
-  name = "jr_ssh_key"
-}
-
 data "digitalocean_reserved_ip" "myip" {
   ip_address = var.public_ip
 }
@@ -13,16 +9,23 @@ resource "digitalocean_droplet" "jobretreiver" {
   region = "nyc3"
   size = "s-1vcpu-1gb"
   ssh_keys = [
-    data.digitalocean_ssh_key.ssh_key.id
+    digitalocean_ssh_key.default.id
   ]
+  tags = ["JobRetriever"]
   connection {
     host = self.ipv4_address
     user = "root"
     type = "ssh"
-    private_key = var.pvt_key
+    private_key = tls_private_key.jr_ssh_key.private_key_pem
     timeout = "2m"
   }
   
+  # Copying environment variable files for vaultwarden sensitive
+  provisioner "file" {
+    source      = "../config/.env.prod"
+    destination = "/tmp/.env.prod"
+  }
+
   provisioner "file" {
     source      = "./external_scripts/setup_project.sh"
     destination = "/tmp/setup_project.sh"
@@ -30,9 +33,6 @@ resource "digitalocean_droplet" "jobretreiver" {
   provisioner "remote-exec" {
     inline = [
       "export PATH=$PATH:/usr/bin",
-      # install nginx
-      "sudo apt-get update",
-      "sudo apt install -y nginx",
       "chmod +x /tmp/setup_project.sh",
       "/tmp/setup_project.sh",
     ]

@@ -9,6 +9,7 @@ docker compose version
 cd ~
 git clone https://github.com/akashsky1994/job_posting_retreiver.git
 cd job_posting_retreiver
+cp /tmp/.env.prod ./config/.env.prod
 
-docker compose build
-docker compose up -d
+docker compose --env-file ./config/.env.prod build
+docker compose --env-file ./config/.env.prod up -d
