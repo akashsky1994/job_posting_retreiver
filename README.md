@@ -1,6 +1,12 @@
 # Job Posting Aggregator
 Fetches jobs from multiple sources into single csv
 
+### Running the project
+```
+docker compose --env-file ./config/.env build
+docker compose --env-file ./config/.env up -d
+```
+
 
 
 
