@@ -5,3 +5,4 @@ terraform_deployment/terraform.tfstate
 terraform_deployment/.terraform*
 *.log
 terraform_deployment/*.tfplan
+postgres-data/*

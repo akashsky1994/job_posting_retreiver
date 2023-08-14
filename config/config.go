@@ -11,14 +11,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewConfig(env_type string, configPaths ...string) *Config {
-	fmt.Println(env_type)
+func NewConfig(env_file string, configPaths ...string) (*Config, error) {
+	fmt.Println(env_file)
 	v := viper.New()
-	v.SetConfigName(getenv("JB_ENV", env_type))
-	v.SetConfigType("yaml")
+	v.SetConfigName(env_file)
+	v.SetConfigType("env")
 	v.AutomaticEnv()
-	v.SetDefault("ServerPort", 8080)
-	v.SetDefault("Env", "development")
+	v.SetDefault("SERVER_PORT", 8080)
+	v.SetDefault("JB_ENV", "development")
 	for _, path := range configPaths {
 		v.AddConfigPath(path)
 	}
@@ -26,19 +26,25 @@ func NewConfig(env_type string, configPaths ...string) *Config {
 		panic(fmt.Errorf("failed to read the configuration file: %s", err))
 	}
 	var conf Config
-	v.Unmarshal(&conf)
-	conf.DBPath = getenv("DBPath", conf.DBPath)
-	return &conf
+	err := v.Unmarshal(&conf)
+	if err != nil {
+		return &conf, err
+	}
+	return &conf, nil
 }
 
 type Config struct {
-	DB         *gorm.DB // the shared DB ORM object
-	Router     *chi.Mux
-	Logger     *log.Logger
-	Cron       *cron.Cron
-	Env        string
-	ServerPort string
-	DBPath     string
+	DB          *gorm.DB // the shared DB ORM object
+	Router      *chi.Mux
+	Logger      *log.Logger
+	Cron        *cron.Cron
+	JB_ENV      string
+	SERVER_PORT string
+	DB_HOST     string
+	DB_NAME     string
+	DB_USER     string
+	DB_PASSWORD string
+	DB_PORT     string
 }
 
 func getenv(key, fallback string) string {

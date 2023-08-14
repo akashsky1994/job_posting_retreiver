@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/handler"
@@ -9,10 +10,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/glebarez/sqlite"
 	"github.com/go-chi/chi/v5"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -20,10 +21,14 @@ type AppConfig struct {
 	*config.Config
 }
 
-func New(env string) *AppConfig {
-	return &AppConfig{
-		config.NewConfig(env, "./config"),
+func New(env string) (*AppConfig, error) {
+	conf, err := config.NewConfig(env, "./config")
+	if err != nil {
+		return nil, err
 	}
+	return &AppConfig{
+		conf,
+	}, nil
 }
 
 func (app *AppConfig) AttachLogger() error {
@@ -50,9 +55,10 @@ func (app *AppConfig) AttachCron() {
 		builtinhandler.FetchJobs("149")
 		builtinhandler.ProcessJobs()
 
-		// app.Logger.Info("Simplify Job Retreiver Cron Added")
-		// simplifyhandler := handler.NewSimplifyHandler(app.Config)
-		// simplifyhandler.FetchJobs()
+		app.Logger.Info("Simplify Job Retreiver Cron Added")
+		simplifyhandler := handler.NewSimplifyHandler(app.Config)
+		simplifyhandler.FetchJobs()
+		simplifyhandler.ProcessJobs()
 
 		app.Logger.Info("Trueup Job Retreiver Cron Added")
 		trueuphandler := handler.NewTrueupHandler(app.Config)
@@ -89,9 +95,9 @@ func (app *AppConfig) PrintRoutes() {
 }
 
 func (app *AppConfig) SetupDB() {
-	db, err := gorm.Open(sqlite.Open(app.DBPath), &gorm.Config{
-		CreateBatchSize: 1,
-	})
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s TimeZone=America/New_York", app.DB_HOST, app.DB_USER, app.DB_PASSWORD, app.DB_NAME, app.DB_PORT)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{CreateBatchSize: 1})
+
 	db = db.Session(&gorm.Session{CreateBatchSize: 1})
 	if err != nil {
 		app.Logger.Panicln("failed to connect database", err.Error())
