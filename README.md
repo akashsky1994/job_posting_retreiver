@@ -2,9 +2,16 @@
 Fetches jobs from multiple sources into single csv
 
 ### Running the project
+
+Standalone
 ```
-docker compose --env-file ./config/.env build
-docker compose --env-file ./config/.env up -d
+go run . --env ./config/.env.prod
+```
+
+In Docker
+```
+docker compose --env-file ./config/.env.prod build
+docker compose --env-file ./config/.env.prod up -d
 ```
 
 
