@@ -33,6 +33,7 @@ func (jbservice *TypesenseConfig) RequestJobs(page int) (*api.SearchResult, erro
 		typesense.WithServer(jbservice.URI),
 		typesense.WithAPIKey(jbservice.API_KEY),
 	)
+	jbservice.Params.Page = &page
 	response, err := client.Collection(jbservice.Index).Documents().Search(jbservice.Params)
 	if err != nil {
 		return nil, errors.ExternalAPIError.Wrap(err, "Error Loading data from Typesense "+jbservice.Source+" Index", log.ErrorLevel)

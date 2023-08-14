@@ -42,5 +42,4 @@ func (dao *DataAccessObject) ListJobs(limit int) ([]model.JobListing, error) {
 		return nil, errors.Unexpected.Wrap(err, "Something went wrong while fetch data from db", log.ErrorLevel)
 	}
 	return joblistings, err
-
 }
