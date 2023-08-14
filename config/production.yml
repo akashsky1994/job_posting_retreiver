@@ -1,3 +1,0 @@
-Env: "production"
-ServerPort: "8080"
-DBPath: /db_volume/job_aggregator.db

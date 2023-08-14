@@ -21,7 +21,7 @@ docker compose --env-file ./config/.env.prod up -d
 
 ```
 cd terraform_deployment
-terraform plan -out=terraform.tfplan -var "do_token=${DO_PAT}" -var "pvt_key=${DO_PVT_KEY}"
+terraform plan -out=terraform.tfplan -var "do_token=${DO_PAT}" -var "public_ip=${JR_PUBLIC_IP}"
 terraform show terraform.tfplan
 terraform apply terraform.tfplan
 ```

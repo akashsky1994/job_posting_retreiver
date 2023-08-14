@@ -4,10 +4,7 @@ variable "do_token" {
     sensitive = true
 } #digital ocean personal token
 
-variable "pvt_key" {
-    description = "Private key"
+variable "public_ip" {
+    description = "Public IP"
     type = string
-    sensitive = true
-} # droplet private key location
-
-variable "public_ip" {}
+}

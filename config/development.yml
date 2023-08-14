@@ -1,3 +1,0 @@
-Env: "development"
-ServerPort: "8080"
-DBPath: job_aggregator.db
