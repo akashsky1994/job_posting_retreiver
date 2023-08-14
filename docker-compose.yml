@@ -13,8 +13,8 @@ services:
       - /mnt:/db_volume:rw
     container_name: go-job-retreiver-docker-app
     environment:
-      - 'JB_ENV=development'
-      - 'DBPath=/db_volume/job_aggregator.db'
+      - 'JB_ENV=production'
+      - 'DBPath=/db_volume/db_volume/job_aggregator.db'
 
   postgres:
     image: postgres

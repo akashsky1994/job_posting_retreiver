@@ -3,7 +3,7 @@ package constant
 import "github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 
 var (
-	TRUEUP_INDEX           string = "job_search"
+	ALGOLIA_TRUEUP_INDEX   string = "job_search"
 	ALGOLIA_TRUEUP_API_KEY string = "dcbd5d6e6bd6f841353e83b5b9557dee"
 	ALGOLIA_TRUEUP_APP_ID  string = "3PR3Y01TFY"
 	TRUEUP_QUERY_PARAMS           = []interface{}{

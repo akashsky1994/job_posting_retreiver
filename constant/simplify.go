@@ -1,6 +1,10 @@
 package constant
 
-import "github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
+import (
+	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
+	"github.com/typesense/typesense-go/typesense/api"
+	"github.com/typesense/typesense-go/typesense/api/pointer"
+)
 
 var (
 	SIMPLIFY_INDEX           string = "JOBS_updated_date_desc"
@@ -28,3 +32,16 @@ var (
 )
 
 var SIMPLIFY_DATA_PATH = "./data/simplify"
+
+var (
+	TYPESENSE_SIMPLIFY_COLLECTION    string = "jobs"
+	TYPESENSE_SIMPLIFY_API_KEY       string = "sUjQlkfBFnglUFcsFsZVcE7xhI8lJ1RG"
+	TYPESENSE_SIMPLIFY_URI           string = "https://xv95tgzrem61cja4p.a1.typesense.net"
+	TYPESENSE_SIMPLIFY_SEARCH_PARAMS        = &api.SearchCollectionParams{
+		Q:        "*",
+		QueryBy:  "title,company_name,locations",
+		SortBy:   pointer.String("updated_date:desc,posting_id:desc"),
+		PerPage:  pointer.Int(100),
+		FilterBy: pointer.String("countries:=[`United States`] && experience_level:=[`Entry Level/New Grad`,`Junior`,`Mid Level`,`Senior`] && functions:=[`AI & Machine Learning`,`Data & Analytics`,`DevOps & Infrastructure`,`IT & Security`,`Product`,`Software Engineering`] && geolocations:(71.5388001, -66.885417, 71.5388001, -180, 18.7763, -180, 18.7763, -66.885417)"),
+	}
+)

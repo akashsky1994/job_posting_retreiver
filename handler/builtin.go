@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/constant"
 	"job_posting_retreiver/dal"
@@ -9,7 +10,9 @@ import (
 	"job_posting_retreiver/model"
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -31,12 +34,19 @@ func NewBuiltInHandler(config *config.Config) *BuiltInHandler {
 	}
 }
 
-func (bh *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Request) {
+func (handler *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Request) {
 	category_id := chi.URLParam(req, "category_id")
-	err := bh.FetchJobs(category_id)
+	err := handler.FetchJobs(category_id)
 	if err != nil {
 		errType, severity := errors.GetTypeAndLogLevel(err)
-		bh.config.Logger.Log(severity, err)
+		handler.config.Logger.Log(severity, err)
+		HandleError(res, err, errType)
+		return
+	}
+	err = handler.ProcessJobs()
+	if err != nil {
+		errType, severity := errors.GetTypeAndLogLevel(err)
+		handler.config.Logger.Log(severity, err)
 		HandleError(res, err, errType)
 		return
 	}
@@ -47,13 +57,16 @@ func (bh *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Re
 func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 	total_pages := 1
 	currPage := 0
-	var joblistings []model.JobListing
 	for currPage != total_pages {
-		var records model.BuiltInRecord
 		response, err := handler.repo.RequestJobs(currPage, category_id)
 		if err != nil {
 			return err
 		}
+
+		var records model.BuiltInRecord
+		err = json.Unmarshal(response, &records)
+		total_pages = records.PageCount
+
 		file_path, err := utils.WriteRawDataToJSONFile(response, handler.data_path)
 		if err != nil {
 			return err
@@ -62,7 +75,32 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 		if err != nil {
 			return err
 		}
-		err = json.Unmarshal(response, &records)
+		currPage += 1
+	}
+	return nil
+}
+
+func (handler *BuiltInHandler) ProcessJobs() error {
+	dir_path := filepath.Join(handler.data_path, "raw_files")
+	files, err := ioutil.ReadDir(dir_path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		file_path := filepath.Join(dir_path, file.Name())
+		handler.config.Logger.Info("Reading file:", file_path)
+
+		content, err := ioutil.ReadFile(file_path)
+		if err != nil {
+			log.Fatal("Error when opening file: ", err)
+		}
+		var records model.BuiltInRecord
+		var joblistings []model.JobListing
+		err = json.Unmarshal(content, &records)
 		if err != nil {
 			return err
 		}
@@ -78,10 +116,10 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 				}
 				// Create Job Object
 				joblisting := model.JobListing{
-					JobLink:  job.JobLink,
+					JobLink:  utils.CleanURL(job.JobLink),
 					JobTitle: job.JobTitle,
 					OrgName:  company.Company.Title,
-					Location: job.Location,
+					Location: []string{job.Location},
 					Remote:   remote,
 					Company: model.Company{
 						ID:   db_company.ID,
@@ -92,35 +130,10 @@ func (handler *BuiltInHandler) FetchJobs(category_id string) error {
 				joblistings = append(joblistings, joblisting)
 			}
 		}
-		currPage += 1
+		err = handler.dao.SaveJobs(joblistings)
+		if err != nil {
+			return err
+		}
 	}
-
-	err := handler.dao.SaveJobs(joblistings)
-	if err != nil {
-		return err
-	}
-
-	// // Saving to JSON for history management
-	// jsonArr, err := json.Marshal(joblistings)
-	// if err != nil {
-	// 	return errors.DataProcessingError.Wrap(err, "Error Loading data into JSON", logrus.ErrorLevel)
-	// }
-	// t := time.Now()
-	// ts := t.Format("20060102150405")
-	// if err := os.WriteFile("./data/builtinjobs_"+category_id+"_"+ts+".json", jsonArr, 0666); err != nil {
-	// 	return errors.Unexpected.Wrap(err, "Error Writing data into output file", logrus.ErrorLevel)
-	// }
-
-	// // Saving to JSON for legacy maintenance
-	// csvArr, err := gocsv.MarshalString(&joblistings)
-	// if err != nil {
-	// 	return errors.DataProcessingError.Wrap(err, "Error Converting byte data into csv", logrus.ErrorLevel)
-	// }
-	// if err := os.WriteFile("./data/builtinjobs_"+category_id+"_"+ts+".csv", []byte(csvArr), 0666); err != nil {
-	// 	return errors.Unexpected.Wrap(err, "Error Writing data into output file", logrus.ErrorLevel)
-	// }
-	// if err := os.WriteFile("./data/builtinjobs_"+category_id+".csv", []byte(csvArr), 0666); err != nil {
-	// 	return errors.Unexpected.Wrap(err, "Error Writing data into output file", logrus.ErrorLevel)
-	// }
 	return nil
 }
