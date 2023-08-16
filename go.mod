@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/algolia/algoliasearch-client-go/v3 v3.30.1
+	github.com/getsentry/raven-go v0.2.0
 	github.com/getsentry/sentry-go v0.23.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/httplog v0.3.1
@@ -28,7 +29,6 @@ require (
 	github.com/deepmap/oapi-codegen v1.13.4 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
-	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.9.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
