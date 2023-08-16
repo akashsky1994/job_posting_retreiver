@@ -21,7 +21,7 @@ func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 	// Saving to DB
 	err := dao.conn.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "job_link"}},
-		DoUpdates: clause.AssignmentColumns([]string{"job_title", "location", "company_id", "updated_at", "source"}),
+		DoUpdates: clause.AssignmentColumns([]string{"job_title", "locations", "company_id", "updated_at", "source"}),
 	}).Create(&joblistings).Error
 	if err != nil {
 		return errors.DataProcessingError.Wrap(err, "Error Adding jobs to DB", log.ErrorLevel)
@@ -29,17 +29,20 @@ func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 	return nil
 }
 
-func (dao *DataAccessObject) ListJobs(limit int) ([]model.JobListing, error) {
-	var joblistings []model.JobListing
-	var err error
-	if limit != 0 {
-		err = dao.conn.Preload("Company").Limit(limit).Find(&joblistings).Error
-	} else {
-		err = dao.conn.Preload("Company").Find(&joblistings).Error
-	}
-
+func (dao *DataAccessObject) ListJobs(pagination Pagination) (*Pagination, error) {
+	var joblistings []*model.JobListing
+	err := dao.conn.Model(&model.JobListing{}).Preload("Company").Scopes(paginate(&joblistings, &pagination, dao.conn)).Select("id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
 	if err != nil {
 		return nil, errors.Unexpected.Wrap(err, "Something went wrong while fetch data from db", log.ErrorLevel)
 	}
-	return joblistings, err
+	pagination.Rows = joblistings
+	return &pagination, err
+}
+
+func (dao *DataAccessObject) SaveRegions(countries []model.Country) error {
+	err := dao.conn.Create(&countries).Error
+	if err != nil {
+		return errors.DataProcessingError.Wrap(err, "Error Adding jobs to DB", log.ErrorLevel)
+	}
+	return nil
 }

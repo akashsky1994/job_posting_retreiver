@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/patrickmn/go-cache"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -38,6 +39,7 @@ type Config struct {
 	Router      *chi.Mux
 	Logger      *log.Logger
 	Cron        *cron.Cron
+	Cache       *cache.Cache
 	JB_ENV      string
 	SERVER_PORT string
 	DB_HOST     string

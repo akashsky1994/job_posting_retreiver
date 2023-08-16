@@ -17,6 +17,7 @@ func main() {
 	}
 
 	app.AttachLogger()
+	app.StartCache()
 	app.SetupDB()
 	app.AttachRouter()
 	app.AttachCron()

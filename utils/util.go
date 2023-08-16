@@ -24,3 +24,12 @@ func StripQueryParam(inURL string, keys []string) string {
 	u.RawQuery = q.Encode()
 	return u.String()
 }
+
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}

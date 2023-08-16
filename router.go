@@ -24,16 +24,16 @@ func (app *AppConfig) AttachRouter() {
 		w.Write([]byte("welcome"))
 	})
 	app.Router.Route("/builtin", func(r chi.Router) {
-		builtinhandler := handler.NewBuiltInHandler(app.Config)
-		r.Mount("/v1", BuiltInRoutes(builtinhandler))
+		jobhandler := handler.NewJobSourceHandler("builtin", app.Config)
+		r.Mount("/v1", BuiltInRoutes(jobhandler))
 	})
 	app.Router.Route("/simplify", func(r chi.Router) {
-		simplifyhandler := handler.NewSimplifyHandler(app.Config)
-		r.Mount("/v1", SimplifyRoutes(simplifyhandler))
+		jobhandler := handler.NewJobSourceHandler("simplify", app.Config)
+		r.Mount("/v1", SimplifyRoutes(jobhandler))
 	})
 	app.Router.Route("/trueup", func(r chi.Router) {
-		simplifyhandler := handler.NewTrueupHandler(app.Config)
-		r.Mount("/v1", TrueUpRoutes(simplifyhandler))
+		jobhandler := handler.NewJobSourceHandler("trueup", app.Config)
+		r.Mount("/v1", TrueUpRoutes(jobhandler))
 	})
 	app.Router.Route("/jobs", func(r chi.Router) {
 		jobhandler := handler.NewJobHandler(app.Config)
@@ -41,26 +41,26 @@ func (app *AppConfig) AttachRouter() {
 	})
 }
 
-func BuiltInRoutes(bihandler *handler.BuiltInHandler) *chi.Mux {
+func BuiltInRoutes(jobhandler handler.JobSourceHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		router.Get("/fetch/{category_id}", bihandler.FetchJobsHandler)
+		router.Get("/fetch", jobhandler.AggregateJobs)
 	})
 	return router
 }
 
-func SimplifyRoutes(shandler *handler.SimplifyHandler) *chi.Mux {
+func SimplifyRoutes(jobhandler handler.JobSourceHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		router.Get("/fetch", shandler.JobSourceHandler)
+		router.Get("/fetch", jobhandler.AggregateJobs)
 	})
 	return router
 }
 
-func TrueUpRoutes(thandler *handler.TrueupHandler) *chi.Mux {
+func TrueUpRoutes(jobhandler handler.JobSourceHandler) *chi.Mux {
 	router := chi.NewRouter()
 	router.Group(func(router chi.Router) {
-		router.Get("/fetch", thandler.FetchJobsHandler)
+		router.Get("/fetch", jobhandler.AggregateJobs)
 	})
 	return router
 }

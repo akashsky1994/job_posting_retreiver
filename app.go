@@ -1,16 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"job_posting_retreiver/config"
+	"job_posting_retreiver/errors"
 	"job_posting_retreiver/handler"
 	"job_posting_retreiver/model"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/patrickmn/go-cache"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -51,8 +56,7 @@ func (app *AppConfig) AttachCron() {
 	app.Cron.AddFunc("@daily", func() {
 		app.Logger.Info("BuiltIn Job Retreiver Cron Added")
 		builtinhandler := handler.NewBuiltInHandler(app.Config)
-		builtinhandler.FetchJobs("147")
-		builtinhandler.FetchJobs("149")
+		builtinhandler.FetchJobs()
 		builtinhandler.ProcessJobs()
 
 		app.Logger.Info("Simplify Job Retreiver Cron Added")
@@ -60,10 +64,10 @@ func (app *AppConfig) AttachCron() {
 		simplifyhandler.FetchJobs()
 		simplifyhandler.ProcessJobs()
 
-		// app.Logger.Info("Trueup Job Retreiver Cron Added")
-		// trueuphandler := handler.NewTrueupHandler(app.Config)
-		// trueuphandler.FetchJobs()
-		// trueuphandler.ProcessJobs()
+		app.Logger.Info("Trueup Job Retreiver Cron Added")
+		trueuphandler := handler.NewTrueupHandler(app.Config)
+		trueuphandler.FetchJobs()
+		trueuphandler.ProcessJobs()
 
 	})
 	app.Cron.Start()
@@ -109,8 +113,52 @@ func (app *AppConfig) SetupDB() {
 		&model.JobListing{},
 		&model.Company{},
 		&model.FileLog{},
+		&model.Country{},
+		&model.State{},
+		&model.City{},
 	)
 	if err != nil {
 		app.Logger.Error("Error Runing Automigration", err.Error())
 	}
+	err = app.LoadRegions()
+	if err != nil {
+		app.Logger.Error("Error Loading Region Data", err.Error())
+	}
+}
+
+func (app *AppConfig) StartCache() {
+	app.Cache = cache.New(5*time.Hour, 10*time.Hour)
+}
+
+func (app *AppConfig) LoadRegions() error {
+	// Let's first read the `config.json` file
+	content, err := ioutil.ReadFile("./data/countries+states+cities.json")
+	if err != nil {
+		return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB | Error when opening file", log.ErrorLevel)
+	}
+	// Now let's unmarshall the data into `payload`
+	var countries []model.Country
+	err = json.Unmarshal(content, &countries)
+	if err != nil {
+		return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB | Error during Unmarshal():", log.ErrorLevel)
+	}
+
+	err = app.Config.DB.Create(&countries).Error
+	if err != nil {
+		return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB", log.ErrorLevel)
+	}
+	var AvailableRegions []string
+	for _, country := range countries {
+		if country.Name == "United States" {
+			AvailableRegions = append(AvailableRegions, country.Name, country.ISO2, country.ISO3, country.Region)
+			for _, state := range country.States {
+				AvailableRegions = append(AvailableRegions, state.Name, state.StateCode)
+				for _, city := range state.Cities {
+					AvailableRegions = append(AvailableRegions, city.Name)
+				}
+			}
+		}
+	}
+	app.Cache.Set("allowed_regions", AvailableRegions, cache.NoExpiration)
+	return nil
 }
