@@ -13,10 +13,10 @@ import (
 )
 
 func (app *AppConfig) SetupSentry() {
-	if app.Config.JB_ENV == "production" {
+	if app.JB_ENV == "production" {
 		// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
 		if err := sentry.Init(sentry.ClientOptions{
-			Dsn:           app.Config.SENTRY_DSN,
+			Dsn:           app.SENTRY_DSN,
 			EnableTracing: true,
 			// Set TracesSampleRate to 1.0 to capture 100%
 			// of transactions for performance monitoring.
