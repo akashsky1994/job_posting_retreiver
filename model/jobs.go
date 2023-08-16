@@ -22,7 +22,7 @@ type JobListing struct {
 	Source    string         `gorm:"column:source;not_null" json:"source,omitempty"`
 	FileLogID uint           `gorm:"column:filelog_id;not_null" json:"-"`
 	FileLog   FileLog        `gorm:"foreignKey:FileLogID;references:ID" json:"-"`
-	DeletedAt gorm.DeletedAt
+	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
 type Company struct {

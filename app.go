@@ -143,10 +143,10 @@ func (app *AppConfig) LoadRegions() error {
 		return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB | Error during Unmarshal():", log.ErrorLevel)
 	}
 
-	err = app.Config.DB.Create(&countries).Error
-	if err != nil {
-		return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB", log.ErrorLevel)
-	}
+	// err = app.Config.DB.Create(&countries).Error
+	// if err != nil {
+	// 	return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB", log.ErrorLevel)
+	// }
 	var AvailableRegions []string
 	for _, country := range countries {
 		if country.Name == "United States" {
