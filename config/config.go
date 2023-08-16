@@ -47,6 +47,7 @@ type Config struct {
 	DB_USER     string
 	DB_PASSWORD string
 	DB_PORT     string
+	SENTRY_DSN  string
 }
 
 func getenv(key, fallback string) string {

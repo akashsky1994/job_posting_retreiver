@@ -1,15 +1,38 @@
 package main
 
 import (
+	"fmt"
 	"job_posting_retreiver/handler"
 	"net/http"
 
+	"github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+func (app *AppConfig) SetupSentry() {
+	if app.Config.JB_ENV == "production" {
+		// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn:           app.Config.SENTRY_DSN,
+			EnableTracing: true,
+			// Set TracesSampleRate to 1.0 to capture 100%
+			// of transactions for performance monitoring.
+			// We recommend adjusting this value in production,
+			TracesSampleRate: 1.0,
+		}); err != nil {
+			fmt.Printf("Sentry initialization failed: %v", err)
+		}
+		// Create an instance of sentryhttp
+		sentryHandler := sentryhttp.New(sentryhttp.Options{})
+		app.Router.Use(sentryHandler.Handle)
+	}
+}
+
 func (app *AppConfig) AttachRouter() {
+
 	app.Router = chi.NewRouter()
 	app.Router.Use(
 		middleware.Heartbeat("/ping"),
@@ -20,6 +43,7 @@ func (app *AppConfig) AttachRouter() {
 		middleware.Recoverer,       // Recover from panics without crashing server
 		middleware.CleanPath,
 	)
+	app.SetupSentry()
 	app.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
 	})

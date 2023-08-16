@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/algolia/algoliasearch-client-go/v3 v3.30.1
+	github.com/getsentry/sentry-go v0.23.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.9
