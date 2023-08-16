@@ -10,9 +10,9 @@ import (
 	"job_posting_retreiver/model"
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
-	"log"
 	"net/http"
 
+	"github.com/getsentry/raven-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -68,7 +68,7 @@ func (handler *BuiltInHandler) FetchJobs() error {
 			var records model.BuiltInRecord
 			err = json.Unmarshal(response, &records)
 			if err != nil {
-				return err
+				return errors.DataProcessingError.Wrap(err, "BuiltInHandler Error", logrus.ErrorLevel)
 			}
 			total_pages = records.PageCount
 
@@ -90,7 +90,7 @@ func (handler *BuiltInHandler) FetchJobs() error {
 func (handler *BuiltInHandler) ProcessJobs() error {
 	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for _, file := range files {
@@ -98,7 +98,7 @@ func (handler *BuiltInHandler) ProcessJobs() error {
 
 		content, err := ioutil.ReadFile(file.FilePath)
 		if err != nil {
-			log.Fatal("Error when opening file: ", err)
+			return errors.DataProcessingError.Wrap(err, "Error Reading file", logrus.ErrorLevel)
 		}
 		var records model.BuiltInRecord
 		var joblistings []model.JobListing
@@ -109,7 +109,9 @@ func (handler *BuiltInHandler) ProcessJobs() error {
 		for _, company := range records.Companies {
 			db_company, err := handler.dao.GetCompany(company.Company.Title)
 			if err != nil {
-				handler.config.Logger.Warn(err)
+				handler.config.Logger.Error(err)
+				raven.CaptureErrorAndWait(err, nil)
+				continue
 			}
 			for _, job := range company.Jobs {
 				remote := true

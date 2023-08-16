@@ -9,7 +9,9 @@ import (
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 
+	"github.com/getsentry/raven-go"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog"
 )
 
 func (app *AppConfig) SetupSentry() {
@@ -28,13 +30,19 @@ func (app *AppConfig) SetupSentry() {
 		// Create an instance of sentryhttp
 		sentryHandler := sentryhttp.New(sentryhttp.Options{})
 		app.Router.Use(sentryHandler.Handle)
+		raven.SetDSN(app.SENTRY_DSN)
+
 	}
 }
 
 func (app *AppConfig) AttachRouter() {
-
+	// Logger
+	logger := httplog.NewLogger("job_retreiver", httplog.Options{
+		JSON: true,
+	})
 	app.Router = chi.NewRouter()
 	app.Router.Use(
+		httplog.RequestLogger(logger),
 		middleware.Heartbeat("/ping"),
 		middleware.Throttle(1),
 		middleware.RequestID,

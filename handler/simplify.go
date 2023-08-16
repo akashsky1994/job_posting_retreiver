@@ -9,11 +9,11 @@ import (
 	"job_posting_retreiver/model"
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
-	"log"
 	"net/http"
 
 	"job_posting_retreiver/dal"
 
+	"github.com/getsentry/raven-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -97,7 +97,7 @@ func (handler *SimplifyHandler) ProcessJobs() error {
 	// files, err := ioutil.ReadDir(dir_path)
 	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	for _, file := range files {
 		// if file.IsDir() {
@@ -109,7 +109,7 @@ func (handler *SimplifyHandler) ProcessJobs() error {
 
 		content, err := ioutil.ReadFile(file.FilePath)
 		if err != nil {
-			log.Fatal("Error when opening file: ", err)
+			return errors.DataProcessingError.Wrap(err, "Error Reading file", logrus.ErrorLevel)
 		}
 		var records []model.SimplifyRecord
 		var joblistings []model.JobListing
@@ -121,6 +121,8 @@ func (handler *SimplifyHandler) ProcessJobs() error {
 			db_company, err := handler.dao.GetCompany(job.Company)
 			if err != nil {
 				handler.config.Logger.Warn(err)
+				raven.CaptureErrorAndWait(err, nil)
+				continue
 			}
 			joblistings = append(joblistings, model.JobListing{
 				JobLink:   utils.CleanURL(job.JobLink),

@@ -17,6 +17,8 @@ import (
 	"job_posting_retreiver/dal"
 
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
+	"github.com/getsentry/raven-go"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -107,14 +109,14 @@ func (handler *TrueupHandler) ProcessJobs() error {
 	}
 	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	for _, file := range files {
 		handler.config.Logger.Info("Reading file:", file.FilePath)
 
 		content, err := ioutil.ReadFile(file.FilePath)
 		if err != nil {
-			log.Fatal("Error when opening file: ", err)
+			return errors.DataProcessingError.Wrap(err, "Error Reading file", logrus.ErrorLevel)
 		}
 		var records []model.TrueUpRecord
 		var joblistings []model.JobListing
@@ -134,6 +136,8 @@ func (handler *TrueupHandler) ProcessJobs() error {
 				db_company, err := handler.dao.GetCompany(job.Company)
 				if err != nil {
 					handler.config.Logger.Warn(err)
+					raven.CaptureErrorAndWait(err, nil)
+					continue
 				}
 				remote := false
 				if job.Remote == 1 {
