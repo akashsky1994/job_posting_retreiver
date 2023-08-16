@@ -13,7 +13,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 )
 
@@ -36,9 +35,9 @@ func NewBuiltInHandler(config *config.Config) *BuiltInHandler {
 	}
 }
 
-func (handler *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Request) {
-	category_id := chi.URLParam(req, "category_id")
-	err := handler.FetchJobs(category_id)
+func (handler *BuiltInHandler) AggregateJobs(res http.ResponseWriter, req *http.Request) {
+	// category_id := chi.URLParam(req, "category_id")
+	err := handler.FetchJobs()
 	if err != nil {
 		errType, severity := errors.GetTypeAndLogLevel(err)
 		handler.config.Logger.Log(severity, err)
@@ -56,32 +55,35 @@ func (handler *BuiltInHandler) FetchJobsHandler(res http.ResponseWriter, req *ht
 	RespondwithJSON(res, http.StatusOK, message)
 }
 
-func (handler *BuiltInHandler) FetchJobs(category_id string) error {
+func (handler *BuiltInHandler) FetchJobs() error {
 	total_pages := 1
 	currPage := 0
-	for currPage != total_pages {
-		response, err := handler.repo.RequestJobs(currPage, category_id)
-		if err != nil {
-			return err
-		}
+	for _, category_id := range constant.CATEGORY_IDS {
+		for currPage != total_pages {
+			response, err := handler.repo.RequestJobs(currPage, category_id)
+			if err != nil {
+				return err
+			}
 
-		var records model.BuiltInRecord
-		err = json.Unmarshal(response, &records)
-		if err != nil {
-			return err
-		}
-		total_pages = records.PageCount
+			var records model.BuiltInRecord
+			err = json.Unmarshal(response, &records)
+			if err != nil {
+				return err
+			}
+			total_pages = records.PageCount
 
-		file_path, err := utils.WriteRawDataToJSONFile(response, handler.data_path)
-		if err != nil {
-			return err
+			file_path, err := utils.WriteRawDataToJSONFile(response, handler.data_path)
+			if err != nil {
+				return err
+			}
+			err = handler.dao.CreateFileLog(file_path, handler.name)
+			if err != nil {
+				return err
+			}
+			currPage += 1
 		}
-		err = handler.dao.CreateFileLog(file_path, handler.name)
-		if err != nil {
-			return err
-		}
-		currPage += 1
 	}
+
 	return nil
 }
 

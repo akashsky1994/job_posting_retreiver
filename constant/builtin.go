@@ -28,3 +28,5 @@ var BuiltInURIQueries = map[string]string{
 }
 
 var BUILTIN_DATA_PATH = "./data/builtin"
+
+var CATEGORY_IDS = []string{"147", "149"}

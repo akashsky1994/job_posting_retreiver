@@ -11,6 +11,7 @@ import (
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
 	"net/http"
+	"strings"
 	"time"
 
 	"job_posting_retreiver/dal"
@@ -28,7 +29,7 @@ type TrueupHandler struct {
 }
 
 func NewTrueupHandler(config *config.Config) *TrueupHandler {
-	last_date := time.Now().AddDate(0, 0, -1)
+	last_date := time.Now().AddDate(0, 0, -7)
 	timestamp := last_date.Unix()
 	params := append(constant.TRUEUP_QUERY_PARAMS, opt.NumericFilter("updated_at_timestamp>="+fmt.Sprint(timestamp)))
 	return &TrueupHandler{
@@ -47,7 +48,7 @@ func NewTrueupHandler(config *config.Config) *TrueupHandler {
 	}
 }
 
-func (handler *TrueupHandler) FetchJobsHandler(res http.ResponseWriter, req *http.Request) {
+func (handler *TrueupHandler) AggregateJobs(res http.ResponseWriter, req *http.Request) {
 	err := handler.FetchJobs()
 	if err != nil {
 		errType, severity := errors.GetTypeAndLogLevel(err)
@@ -100,6 +101,10 @@ func (handler *TrueupHandler) FetchJobs() error {
 }
 
 func (handler *TrueupHandler) ProcessJobs() error {
+	var ALLOWED_REGIONS []string
+	if data, found := handler.config.Cache.Get("allowed_regions"); found {
+		ALLOWED_REGIONS = data.([]string)
+	}
 	files, err := handler.dao.ListPendingFiles(handler.name)
 	if err != nil {
 		log.Fatal(err)
@@ -119,24 +124,32 @@ func (handler *TrueupHandler) ProcessJobs() error {
 		}
 
 		for _, job := range records {
-			db_company, err := handler.dao.GetCompany(job.Company)
-			if err != nil {
-				handler.config.Logger.Warn(err)
+			is_allowed := false
+			for _, loc := range strings.Split(job.Location, ",") {
+				if utils.StringInSlice(strings.TrimSpace(loc), ALLOWED_REGIONS) {
+					is_allowed = true
+				}
 			}
-			remote := false
-			if job.Remote == 1 {
-				remote = true
+			if is_allowed {
+				db_company, err := handler.dao.GetCompany(job.Company)
+				if err != nil {
+					handler.config.Logger.Warn(err)
+				}
+				remote := false
+				if job.Remote == 1 {
+					remote = true
+				}
+				joblistings = append(joblistings, model.JobListing{
+					JobLink:   utils.CleanURL(job.JobLink),
+					JobTitle:  job.JobTitle,
+					OrgName:   job.Company,
+					Locations: []string{job.Location},
+					Remote:    remote,
+					Company:   db_company,
+					Source:    handler.name,
+					FileLog:   file,
+				})
 			}
-			joblistings = append(joblistings, model.JobListing{
-				JobLink:   utils.CleanURL(job.JobLink),
-				JobTitle:  job.JobTitle,
-				OrgName:   job.Company,
-				Locations: []string{job.Location},
-				Remote:    remote,
-				Company:   db_company,
-				Source:    handler.name,
-				FileLog:   file,
-			})
 		}
 		err = handler.dao.SaveJobs(joblistings)
 		if err != nil {

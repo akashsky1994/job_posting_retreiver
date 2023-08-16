@@ -41,7 +41,7 @@ func NewSimplifyHandler(config *config.Config) *SimplifyHandler {
 	}
 }
 
-func (handler *SimplifyHandler) JobSourceHandler(res http.ResponseWriter, req *http.Request) {
+func (handler *SimplifyHandler) AggregateJobs(res http.ResponseWriter, req *http.Request) {
 	err := handler.FetchJobs()
 	if err != nil {
 		errType, severity := errors.GetTypeAndLogLevel(err)
