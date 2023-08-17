@@ -10,6 +10,7 @@ services:
     restart: on-failure
     volumes:
       - .:/go-job-retreiver-docker
+      - ${RAW_FILE_PATH}:/go/src/job_posting_retreiver/data
     container_name: go-job-retreiver-docker-app
     environment:
       JB_ENV: ${JB_ENV}
@@ -17,7 +18,10 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_PORT: ${DB_PORT}
-      DB_HOST: postgres
+      DB_HOST: ${DB_HOST}
+      SENTRY_DSN: ${SENTRY_DSN}
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres

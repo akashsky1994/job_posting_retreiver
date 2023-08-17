@@ -29,7 +29,7 @@ type AppConfig struct {
 }
 
 func New(env string) (*AppConfig, error) {
-	conf, err := config.NewConfig(env, "./config")
+	conf, err := config.NewConfig(env, "./config", "./")
 	if err != nil {
 		return nil, err
 	}
