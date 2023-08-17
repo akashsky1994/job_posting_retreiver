@@ -31,7 +31,7 @@ func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 
 func (dao *DataAccessObject) ListJobs(pagination Pagination) (*Pagination, error) {
 	var joblistings []*model.JobListing
-	err := dao.conn.Model(&model.JobListing{}).Preload("Company").Scopes(paginate(&joblistings, &pagination, dao.conn)).Select("id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
+	err := dao.conn.Model(&model.JobListing{}).Order("id desc").Preload("Company").Scopes(paginate(&joblistings, &pagination, dao.conn)).Select("id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
 	if err != nil {
 		return nil, errors.Unexpected.Wrap(err, "Something went wrong while fetch data from db", log.ErrorLevel)
 	}
