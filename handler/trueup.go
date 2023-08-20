@@ -126,10 +126,10 @@ func (handler *TrueupHandler) ProcessJobs() error {
 		}
 
 		for _, job := range records {
-			is_allowed := false
+			is_allowed := true
 			for _, loc := range strings.Split(job.Location, ",") {
-				if utils.StringInSlice(strings.TrimSpace(loc), ALLOWED_REGIONS) {
-					is_allowed = true
+				if !utils.StringInSlice(strings.TrimSpace(loc), ALLOWED_REGIONS) {
+					is_allowed = false
 				}
 			}
 			if is_allowed {
