@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"job_posting_retreiver/config"
+	"job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
 	"job_posting_retreiver/handler"
 	"job_posting_retreiver/model"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/getsentry/raven-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/patrickmn/go-cache"
 	"github.com/robfig/cron/v3"
@@ -27,7 +29,7 @@ type AppConfig struct {
 }
 
 func New(env string) (*AppConfig, error) {
-	conf, err := config.NewConfig(env, "./config")
+	conf, err := config.NewConfig(env, "./config", "./")
 	if err != nil {
 		return nil, err
 	}
@@ -54,21 +56,21 @@ func (app *AppConfig) AttachLogger() error {
 func (app *AppConfig) AttachCron() {
 	app.Cron = cron.New()
 	app.Cron.AddFunc("@daily", func() {
-		app.Logger.Info("BuiltIn Job Retreiver Cron Added")
-		builtinhandler := handler.NewBuiltInHandler(app.Config)
-		builtinhandler.FetchJobs()
-		builtinhandler.ProcessJobs()
+		for _, source := range constant.JOB_SOURCES {
+			app.Logger.Info("Running Job Retreiver Cron for:", source)
+			jobhandler := handler.NewJobSourceHandler("trueup", app.Config)
+			if err := jobhandler.FetchJobs(); err != nil {
+				raven.CaptureErrorAndWait(err, map[string]string{"type": "cron_" + source})
+				_, severity := errors.GetTypeAndLogLevel(err)
+				app.Logger.Log(severity, err)
 
-		app.Logger.Info("Simplify Job Retreiver Cron Added")
-		simplifyhandler := handler.NewSimplifyHandler(app.Config)
-		simplifyhandler.FetchJobs()
-		simplifyhandler.ProcessJobs()
-
-		app.Logger.Info("Trueup Job Retreiver Cron Added")
-		trueuphandler := handler.NewTrueupHandler(app.Config)
-		trueuphandler.FetchJobs()
-		trueuphandler.ProcessJobs()
-
+			}
+			if err := jobhandler.ProcessJobs(); err != nil {
+				raven.CaptureErrorAndWait(err, map[string]string{"type": "cron_" + source})
+				_, severity := errors.GetTypeAndLogLevel(err)
+				app.Logger.Log(severity, err)
+			}
+		}
 	})
 	app.Cron.Start()
 	app.Logger.Infof("Cron Info: %+v\n", app.Cron.Entries())

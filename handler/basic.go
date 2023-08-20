@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"job_posting_retreiver/errors"
 	"net/http"
+
+	"github.com/getsentry/raven-go"
 )
 
 func RespondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
@@ -15,6 +17,7 @@ func RespondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func HandleError(w http.ResponseWriter, err error, errType errors.ErrorType) {
+	raven.CaptureErrorAndWait(err, map[string]string{"type": "api_call"})
 	var status int
 	switch errType {
 	case errors.NotFound:

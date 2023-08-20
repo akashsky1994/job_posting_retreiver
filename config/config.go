@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/patrickmn/go-cache"
@@ -13,16 +12,16 @@ import (
 )
 
 func NewConfig(env_file string, configPaths ...string) (*Config, error) {
-	fmt.Println(env_file)
 	v := viper.New()
 	v.SetConfigName(env_file)
 	v.SetConfigType("env")
-	v.AutomaticEnv()
+
 	v.SetDefault("SERVER_PORT", 8080)
 	v.SetDefault("JB_ENV", "development")
 	for _, path := range configPaths {
 		v.AddConfigPath(path)
 	}
+	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("failed to read the configuration file: %s", err))
 	}
@@ -47,12 +46,13 @@ type Config struct {
 	DB_USER     string
 	DB_PASSWORD string
 	DB_PORT     string
+	SENTRY_DSN  string
 }
 
-func getenv(key, fallback string) string {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return fallback
-	}
-	return value
-}
+// func getenv(key, fallback string) string {
+// 	value := os.Getenv(key)
+// 	if len(value) == 0 {
+// 		return fallback
+// 	}
+// 	return value
+// }
