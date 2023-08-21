@@ -58,7 +58,7 @@ func (app *AppConfig) AttachCron() {
 	app.Cron.AddFunc("@daily", func() {
 		for _, source := range constant.JOB_SOURCES {
 			app.Logger.Info("Running Job Retreiver Cron for:", source)
-			jobhandler := handler.NewJobSourceHandler("trueup", app.Config)
+			jobhandler := handler.NewJobSourceHandler(source, app.Config)
 			if err := jobhandler.FetchJobs(); err != nil {
 				raven.CaptureErrorAndWait(err, map[string]string{"type": "cron_" + source})
 				_, severity := errors.GetTypeAndLogLevel(err)
