@@ -6,7 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type Pagination struct {
+type Query struct {
+	UserID     int         `json:"-"`
 	PerPage    int         `json:"per_page,omitempty;query:per_page"`
 	Page       int         `json:"page,omitempty;query:page"`
 	Sort       string      `json:"sort,omitempty;query:sort"`
@@ -15,32 +16,32 @@ type Pagination struct {
 	Rows       interface{} `json:"rows"`
 }
 
-func (p *Pagination) GetOffset() int {
+func (p *Query) GetOffset() int {
 	return (p.GetPage() - 1) * p.GetPerPage()
 }
 
-func (p *Pagination) GetPerPage() int {
+func (p *Query) GetPerPage() int {
 	if p.PerPage == 0 {
 		p.PerPage = 10
 	}
 	return p.PerPage
 }
 
-func (p *Pagination) GetPage() int {
+func (p *Query) GetPage() int {
 	if p.Page == 0 {
 		p.Page = 1
 	}
 	return p.Page
 }
 
-func (p *Pagination) GetSort() string {
+func (p *Query) GetSort() string {
 	if p.Sort == "" {
 		p.Sort = "id desc"
 	}
 	return p.Sort
 }
 
-func paginate(value interface{}, pagination *Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+func paginate(value interface{}, pagination *Query, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
 	db.Model(value).Count(&totalRows)
 

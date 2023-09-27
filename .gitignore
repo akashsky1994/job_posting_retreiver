@@ -7,3 +7,4 @@ terraform_deployment/.terraform*
 terraform_deployment/*.tfplan
 postgres-data/*
 config/.env*
+data_analysis/env

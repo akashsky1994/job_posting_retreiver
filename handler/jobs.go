@@ -42,12 +42,15 @@ func NewJobHandler(config *config.Config) *JobHandler {
 
 func (handler *JobHandler) ListJobs(res http.ResponseWriter, req *http.Request) {
 	query := req.URL.Query()
-	var pagination dal.Pagination
+	var pagination dal.Query
 	if val, err := strconv.Atoi(query.Get("page")); err == nil {
 		pagination.Page = val
 	}
 	if val, err := strconv.Atoi(query.Get("per_page")); err == nil {
 		pagination.PerPage = val
+	}
+	if val, err := strconv.Atoi(query.Get("user_id")); err == nil {
+		pagination.UserID = val
 	}
 	jobs, err := handler.dao.ListJobs(pagination)
 	if err != nil {
