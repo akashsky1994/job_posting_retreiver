@@ -29,14 +29,14 @@ func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 	return nil
 }
 
-func (dao *DataAccessObject) ListJobs(pagination Pagination) (*Pagination, error) {
+func (dao *DataAccessObject) ListJobs(query Query) (*Query, error) {
 	var joblistings []*model.JobListing
-	err := dao.conn.Model(&model.JobListing{}).Order("id desc").Preload("Company").Scopes(paginate(&joblistings, &pagination, dao.conn)).Select("id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
+	err := dao.conn.Model(&model.JobListing{}).Order("id desc").Preload("Company").Scopes(paginate(&joblistings, &query, dao.conn), dao.exclude_user_jobs(query.UserID), dao.exclude_older_jobs()).Select("id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
 	if err != nil {
 		return nil, errors.Unexpected.Wrap(err, "Something went wrong while fetch data from db", log.ErrorLevel)
 	}
-	pagination.Rows = joblistings
-	return &pagination, err
+	query.Rows = joblistings
+	return &query, err
 }
 
 func (dao *DataAccessObject) SaveRegions(countries []model.Country) error {
@@ -45,4 +45,17 @@ func (dao *DataAccessObject) SaveRegions(countries []model.Country) error {
 		return errors.DataProcessingError.Wrap(err, "Error Adding jobs to DB", log.ErrorLevel)
 	}
 	return nil
+}
+
+func (dao *DataAccessObject) exclude_user_jobs(user_id int) func(db *gorm.DB) *gorm.DB {
+	subquery := dao.conn.Table("user_jobs").Select("job_id").Where("user_id = ?", user_id)
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("id not in (?)", subquery)
+	}
+}
+
+func (dao *DataAccessObject) exclude_older_jobs() func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("updated_at > (NOW() - INTERVAL '1' MONTH)")
+	}
 }

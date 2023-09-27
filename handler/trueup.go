@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
@@ -11,6 +10,7 @@ import (
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -18,7 +18,6 @@ import (
 
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 	"github.com/getsentry/raven-go"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -114,9 +113,9 @@ func (handler *TrueupHandler) ProcessJobs() error {
 	for _, file := range files {
 		handler.config.Logger.Info("Reading file:", file.FilePath)
 
-		content, err := ioutil.ReadFile(file.FilePath)
+		content, err := os.ReadFile(file.FilePath)
 		if err != nil {
-			return errors.DataProcessingError.Wrap(err, "Error Reading file", logrus.ErrorLevel)
+			return errors.DataProcessingError.Wrap(err, "Error Reading file", log.ErrorLevel)
 		}
 		var records []model.TrueUpRecord
 		var joblistings []model.JobListing
@@ -127,7 +126,7 @@ func (handler *TrueupHandler) ProcessJobs() error {
 
 		for _, job := range records {
 			is_allowed := true
-			for _, loc := range strings.Split(job.Location, ",") {
+			for _, loc := range strings.Split(job.Location, ",") { //TODO
 				if !utils.StringInSlice(strings.TrimSpace(loc), ALLOWED_REGIONS) {
 					is_allowed = false
 				}

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
@@ -22,6 +21,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type AppConfig struct {
@@ -102,7 +102,10 @@ func (app *AppConfig) PrintRoutes() {
 
 func (app *AppConfig) SetupDB() {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s TimeZone=America/New_York", app.DB_HOST, app.DB_USER, app.DB_PASSWORD, app.DB_NAME, app.DB_PORT)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{CreateBatchSize: 1})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		CreateBatchSize: 1,
+		Logger:          logger.Default.LogMode(logger.Warn),
+	})
 
 	db = db.Session(&gorm.Session{CreateBatchSize: 1})
 	if err != nil {
@@ -118,6 +121,8 @@ func (app *AppConfig) SetupDB() {
 		&model.Country{},
 		&model.State{},
 		&model.City{},
+		&model.User{},
+		&model.UserJob{},
 	)
 	if err != nil {
 		app.Logger.Error("Error Runing Automigration", err.Error())
@@ -134,7 +139,7 @@ func (app *AppConfig) StartCache() {
 
 func (app *AppConfig) LoadRegions() error {
 	// Let's first read the `config.json` file
-	content, err := ioutil.ReadFile("./data/countries+states+cities.json")
+	content, err := os.ReadFile("./data/countries+states+cities.json")
 	if err != nil {
 		return errors.DataProcessingError.Wrap(err, "Error Adding Region Data to DB | Error when opening file", log.ErrorLevel)
 	}

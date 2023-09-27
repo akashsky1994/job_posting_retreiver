@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"io/ioutil"
+	"io"
 	jrconstant "job_posting_retreiver/constant"
 	"job_posting_retreiver/errors"
 	"job_posting_retreiver/model"
@@ -48,7 +48,7 @@ func (jbservice *BuiltInService) RequestJobs(page int, category_id string) ([]by
 
 	defer resp.Body.Close()
 
-	resbody, err := ioutil.ReadAll(resp.Body)
+	resbody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Unexpected.Wrap(err, "Error Loading data from BuiltIn API", log.ErrorLevel)
 	}

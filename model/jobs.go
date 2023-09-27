@@ -20,7 +20,7 @@ type JobListing struct {
 	Company   Company        `gorm:"foreignKey:CompanyID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"company,omitempty"`
 	OrgName   string         `gorm:"column:org_name;not_null;type:varchar(100);" json:"org_name,omitempty"`
 	Source    string         `gorm:"column:source;not_null" json:"source,omitempty"`
-	FileLogID uint           `gorm:"column:filelog_id;not_null" json:"-"`
+	FileLogID uint           `gorm:"column:file_log_id;not_null" json:"-"`
 	FileLog   FileLog        `gorm:"foreignKey:FileLogID;references:ID" json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-"`
 }

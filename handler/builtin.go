@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"job_posting_retreiver/config"
 	"job_posting_retreiver/constant"
 	"job_posting_retreiver/dal"
@@ -11,6 +10,7 @@ import (
 	"job_posting_retreiver/repository"
 	"job_posting_retreiver/utils"
 	"net/http"
+	"os"
 
 	"github.com/getsentry/raven-go"
 	"github.com/sirupsen/logrus"
@@ -96,7 +96,7 @@ func (handler *BuiltInHandler) ProcessJobs() error {
 	for _, file := range files {
 		handler.config.Logger.Info("Reading file:", file.FilePath)
 
-		content, err := ioutil.ReadFile(file.FilePath)
+		content, err := os.ReadFile(file.FilePath)
 		if err != nil {
 			return errors.DataProcessingError.Wrap(err, "Error Reading file", logrus.ErrorLevel)
 		}
