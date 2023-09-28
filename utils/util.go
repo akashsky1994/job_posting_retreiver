@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"job_posting_retreiver/constant"
 	"net/url"
+	"regexp"
 )
 
 func CleanURL(inURL string) string {
+	if matched, _ := regexp.MatchString(`^https://jobs.lever.co/|https://boards.greenhouse.io/|https://jobs.ashbyhq.com/`, inURL); matched {
+		return StripQueryParam(inURL, []string{})
+	}
 	return StripQueryParam(inURL, constant.REDUNDANT_PARAMS)
 }
 
@@ -21,7 +25,12 @@ func StripQueryParam(inURL string, keys []string) string {
 	for _, stripKey := range keys {
 		q.Del(stripKey)
 	}
-	u.RawQuery = q.Encode()
+	if len(keys) == 0 {
+		u.RawQuery = ""
+	} else {
+		u.RawQuery = q.Encode()
+	}
+
 	return u.String()
 }
 
