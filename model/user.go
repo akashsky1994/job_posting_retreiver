@@ -12,8 +12,8 @@ type User struct {
 type UserJob struct {
 	gorm.Model
 	ID         uint       `gorm:"primary_key;column:id;autoIncrement" json:"id,omitempty"`
-	UserID     uint       `gorm:"not_null"`
+	UserID     uint       `gorm:"not_null;index:user_job_ids,unique,type:btree"`
 	User       User       `gorm:"foreignKey:UserID"`
-	JobID      uint       `gorm:"not_null"`
+	JobID      uint       `gorm:"not_null;index:user_job_ids,unique,type:btree"`
 	JobListing JobListing `gorm:"foreignKey:JobID"`
 }
