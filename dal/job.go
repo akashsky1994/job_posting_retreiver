@@ -56,6 +56,6 @@ func (dao *DataAccessObject) exclude_user_jobs(user_id int) func(db *gorm.DB) *g
 
 func (dao *DataAccessObject) exclude_older_jobs() func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("updated_at > (NOW() - INTERVAL '1' MONTH)")
+		return db.Where("job_listings.updated_at > (NOW() - INTERVAL '1' MONTH)")
 	}
 }
