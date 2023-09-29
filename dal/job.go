@@ -31,7 +31,12 @@ func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 
 func (dao *DataAccessObject) ListJobs(query Query) (*Query, error) {
 	var joblistings []*model.JobListing
-	err := dao.conn.Model(&model.JobListing{}).InnerJoins("Company", dao.conn.Where(&model.Company{Flag: true})).Scopes(paginate(&joblistings, &query, dao.conn), dao.exclude_user_jobs(query.UserID), dao.exclude_older_jobs()).Select("job_listings.id as id , job_link, job_title, source, locations, company_id").Find(&joblistings).Error
+
+	query_stmt := dao.conn.Model(&model.JobListing{}).InnerJoins("Company", dao.conn.Where(&model.Company{Flag: true})).Scopes(dao.exclude_user_jobs(query.UserID), dao.exclude_older_jobs())
+
+	err := query_stmt.Scopes(paginate(&query, query_stmt)).Select("job_listings.id as id , job_link, job_title, source, locations, company_id").Find(&joblistings).Error
+
+	// err := dao.conn.Model(&model.JobListing{}).InnerJoins("Company", dao.conn.Where(&model.Company{Flag: true})).Scopes(paginate(&joblistings, &query, dao.conn), dao.exclude_user_jobs(query.UserID), dao.exclude_older_jobs()).Select("job_listings.id as id , job_link, job_title, source, locations, company_id").Find(&joblistings).Error
 	if err != nil {
 		return nil, errors.Unexpected.Wrap(err, "Something went wrong while fetch data from db", log.ErrorLevel)
 	}

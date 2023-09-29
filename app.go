@@ -48,7 +48,11 @@ func (app *AppConfig) AttachLogger() error {
 	app.Logger = log.New()
 	app.Logger.SetOutput(mw)
 	app.Logger.SetFormatter(&log.TextFormatter{ForceColors: true, FullTimestamp: true, TimestampFormat: "2006-01-02 15:04:05"})
-	app.Logger.SetLevel(log.InfoLevel)
+	app_log_level := log.InfoLevel
+	if os.Getenv("LOG_LEVEL") == "Verbose" {
+		app_log_level = log.DebugLevel
+	}
+	app.Logger.SetLevel(app_log_level)
 	app.Logger.Print("Logging to a job_posting_retreiver.log in Go!")
 	return nil
 }
@@ -101,10 +105,14 @@ func (app *AppConfig) PrintRoutes() {
 }
 
 func (app *AppConfig) SetupDB() {
+	db_log_level := logger.Warn
+	if os.Getenv("LOG_LEVEL") == "Verbose" {
+		db_log_level = logger.Info
+	}
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s TimeZone=America/New_York", app.DB_HOST, app.DB_USER, app.DB_PASSWORD, app.DB_NAME, app.DB_PORT)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		CreateBatchSize: 1,
-		Logger:          logger.Default.LogMode(logger.Warn),
+		Logger:          logger.Default.LogMode(db_log_level),
 	})
 
 	db = db.Session(&gorm.Session{CreateBatchSize: 1})
