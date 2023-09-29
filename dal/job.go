@@ -31,7 +31,7 @@ func (dao *DataAccessObject) SaveJobs(joblistings []model.JobListing) error {
 
 func (dao *DataAccessObject) ListJobs(query Query) (*Query, error) {
 	var joblistings []*model.JobListing
-	err := dao.conn.Model(&model.JobListing{}).Order("id desc").Preload("Company").Scopes(paginate(&joblistings, &query, dao.conn), dao.exclude_user_jobs(query.UserID), dao.exclude_older_jobs()).Select("id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
+	err := dao.conn.Model(&model.JobListing{}).Order("job_listings.id desc").InnerJoins("Company", dao.conn.Where(&model.Company{Flag: true})).Scopes(paginate(&joblistings, &query, dao.conn), dao.exclude_user_jobs(query.UserID), dao.exclude_older_jobs()).Select("job_listings.id", "job_link", "job_title", "source", "locations", "company_id").Find(&joblistings).Error
 	if err != nil {
 		return nil, errors.Unexpected.Wrap(err, "Something went wrong while fetch data from db", log.ErrorLevel)
 	}
@@ -50,7 +50,7 @@ func (dao *DataAccessObject) SaveRegions(countries []model.Country) error {
 func (dao *DataAccessObject) exclude_user_jobs(user_id int) func(db *gorm.DB) *gorm.DB {
 	subquery := dao.conn.Table("user_jobs").Select("job_id").Where("user_id = ?", user_id)
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("id not in (?)", subquery)
+		return db.Where("job_listings.id not in (?)", subquery)
 	}
 }
 
