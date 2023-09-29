@@ -18,5 +18,5 @@ type UserJob struct {
 	User       User       `gorm:"foreignKey:UserID"`
 	JobID      uint       `gorm:"not_null;index:user_job_ids,unique,type:btree"`
 	JobListing JobListing `gorm:"foreignKey:JobID"`
-	Applied    int8       `gorm:"default:1"`
+	Applied    int8       `gorm:"default:0"`
 }
